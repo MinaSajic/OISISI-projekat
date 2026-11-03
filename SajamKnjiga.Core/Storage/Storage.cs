@@ -1,8 +1,8 @@
 //  Preuzeto sa materijala sa vezbi 3
 
-using SerializationExample.Serialization;
+using SajamKnjiga.Core.Serialization;
 
-namespace SerializationExample.Storage;
+namespace SajamKnjiga.Core.Storage;
 
 public class Storage<T> where T : ISerializable, new()
 {
@@ -18,6 +18,13 @@ public class Storage<T> where T : ISerializable, new()
     {
         // ukoliko fajl ne postoji napravi novi fajl i
         // zatvori stream za pisanje u fajl
+
+        string putanjaDoFoldera = Path.GetDirectoryName(_filePath);
+        if (!Directory.Exists(putanjaDoFoldera))
+        {
+            Directory.CreateDirectory(putanjaDoFoldera);
+        }
+
         if (!File.Exists(_filePath))
         {
             FileStream fs = File.Create(_filePath);

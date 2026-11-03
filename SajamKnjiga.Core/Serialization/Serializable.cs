@@ -1,4 +1,4 @@
-﻿namespace SerializationExample.Serialization;
+﻿namespace SajamKnjiga.Core.Serialization;
 
 //  Preuzeto sa materijala sa vezbi 3
 public interface ISerializable

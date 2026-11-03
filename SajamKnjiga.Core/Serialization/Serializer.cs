@@ -2,7 +2,7 @@
 
 using System.Text;
 
-namespace SerializationExample.Serialization;
+namespace SajamKnjiga.Core.Serialization;
 
 class Serializer<T> where T : ISerializable, new()
 {
