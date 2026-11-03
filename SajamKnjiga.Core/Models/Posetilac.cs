@@ -11,7 +11,7 @@ namespace SajamKnjiga.Core.Models
     {
         public string Ime { get; set; }
         public string Prezime { get; set; }
-        public string DatumRodjenja { get; set; }
+        public DateOnly DatumRodjenja { get; set; }
         public Adresa Adresa { get; set; }
         public string KontaktTelefon { get; set; }
         public string Email { get; set; }
