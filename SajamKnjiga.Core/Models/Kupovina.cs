@@ -10,8 +10,7 @@ namespace SajamKnjiga.Core.Models
     public class Kupovina
     {
         public Posetilac Posetilac { get; set; }
-        // public Knjiga Knjiga { get; set; } mi fali
-        // TODO
+        public Knjiga Knjiga { get; set; } 
 
         public DateOnly DatumKupovine { get; set; }
 

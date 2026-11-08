@@ -1,4 +1,5 @@
 ﻿using SajamKnjiga.Core.Serialization;
+using System.Globalization;
 
 namespace SajamKnjiga.Core.Models
 {
@@ -21,11 +22,20 @@ namespace SajamKnjiga.Core.Models
         public StatusPosetioca Status { get; set; }
         public double ProsecnaOcenaRecenzija { get; set; }
 
+        public override string ToString()
+        {
+            return $"{BrojClanskeKarte} | {Ime} | {Prezime} | " +
+                   $"{DatumRodjenja} | {Adresa.Ulica} | {Adresa.Broj} | {Adresa.Grad} | {Adresa.Drzava} " +
+                   $"{KontaktTelefon} | {Email} | {TrenutnaGodinaClanstva} | {Status} | {ProsecnaOcenaRecenzija}";
+            // TO DO
+            // Malo lepsi format od ovog da napravim za konzolu
+        }
+
         public void FromCSV(string[] values)
         {
             Ime = values[0];
             Prezime = values[1];
-            DatumRodjenja = values[2];
+            DatumRodjenja = DateOnly.ParseExact(values[2],new[] { "d.M.yyyy.", "d.M.yyyy", "M'/'d'/'yyyy" });
             
             Adresa = new Adresa()
             {
@@ -49,7 +59,7 @@ namespace SajamKnjiga.Core.Models
             {
                 Ime,
                 Prezime,
-                DatumRodjenja.ToString(),
+                DatumRodjenja.ToString("d.M.yyyy."),
                 Adresa.Ulica,
                 Adresa.Broj,
                 Adresa.Grad,

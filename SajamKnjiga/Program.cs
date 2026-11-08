@@ -1,5 +1,7 @@
 ﻿using SajamKnjiga.Core.Models;
 using SajamKnjiga.Core.Storage;
+using System.ComponentModel.Design;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace SajamKnjiga
@@ -19,6 +21,8 @@ namespace SajamKnjiga
                 Console.WriteLine("Izaberi od ponudjenih: ");
                 Console.WriteLine("1 Prikaz posetilaca");
                 Console.WriteLine("2 Dodavanje posetilaca");
+                Console.WriteLine("3 Brisanje posetioca");
+                Console.WriteLine("4 Izmena posetioca");
                 Console.WriteLine("0 Izlaz iz programa");
 
                 string odabranaOpcija = Console.ReadLine();
@@ -32,7 +36,13 @@ namespace SajamKnjiga
                         DodajPosetioca();
                         break;
                     case "0":
-                        izlazIzProgama = true;
+                        izlazIzProgama = true;  // tek nakon izlaska iz programa (izborom 0 u terminalu) mi se ukloni posetilac u datoteci Posetioci.txt, ne pre
+                        break;
+                    case "3":
+                        BrisanjePosetioca();
+                        break;
+                    case "4":
+                        IzmeniPosetioca();
                         break;
                     default:
                         Console.WriteLine("Pogresna opcija");
@@ -43,25 +53,12 @@ namespace SajamKnjiga
             SacuvajPosetioce(posetioci);
         }
 
-        private static void PrikaziPosetioce()
-        {
+        private static void PrikaziPosetioce() { 
+        
             Console.WriteLine("Prikaz posetioca:");
             foreach (Posetilac posetilac in posetioci)
             {
-                Console.WriteLine();
-                Console.WriteLine(posetilac.Ime);
-                Console.WriteLine(posetilac.Prezime);
-                Console.WriteLine(posetilac.DatumRodjenja);
-                Console.WriteLine(posetilac.Adresa.Ulica);
-                Console.WriteLine(posetilac.Adresa.Broj);
-                Console.WriteLine(posetilac.Adresa.Grad);
-                Console.WriteLine(posetilac.Adresa.Drzava);
-                Console.WriteLine(posetilac.KontaktTelefon);
-                Console.WriteLine(posetilac.Email);
-                Console.WriteLine(posetilac.BrojClanskeKarte);
-                Console.WriteLine(posetilac.TrenutnaGodinaClanstva);
-                Console.WriteLine(posetilac.Status);
-                Console.WriteLine(posetilac.ProsecnaOcenaRecenzija);
+                Console.WriteLine(posetilac);
 
             }
 
@@ -80,7 +77,13 @@ namespace SajamKnjiga
             posetilac.Prezime = Console.ReadLine();
 
             Console.WriteLine("Unesi datum rodjenja: ");
-            posetilac.DatumRodjenja = Console.ReadLine();
+            if (!DateOnly.TryParseExact(Console.ReadLine(), new[] { "d.M.yyyy", "d.M.yyyy." }, out DateOnly datumRodjenja))
+            {
+                Console.WriteLine("Neispravan datum.");
+                return;
+            }
+
+            posetilac.DatumRodjenja = datumRodjenja;
 
             posetilac.Adresa = new Adresa();
 
@@ -131,6 +134,123 @@ namespace SajamKnjiga
             List<Posetilac> posetioci = storage.Load();
 
             return posetioci;
+        }
+
+        private static void BrisanjePosetioca()
+        {
+            Console.WriteLine("Unesi broj licne karte posetioca: ");
+
+            string BrK = Console.ReadLine();
+
+            int position = -1;
+
+            for(int i = 0; i < posetioci.Count; i++)
+            {
+                if (posetioci[i].BrojClanskeKarte == BrK)
+                {
+                    position = i;
+                    break;
+                }
+            }
+
+            if(position == -1)
+            {
+                Console.WriteLine("Posetilac nije pronadjen");
+                return;
+            }
+
+            posetioci.RemoveAt(position);
+            Console.WriteLine("Posetilac je obrisan iz liste.");
+        }
+
+        private static void IzmeniPosetioca()
+        {
+            Console.WriteLine("Unesi broj clanske karte: ");
+            string BrK = Console.ReadLine();
+
+            int position = -1;
+
+            for(int i = 0; i < posetioci.Count; i++)
+            { 
+                if (posetioci[i].BrojClanskeKarte == BrK)
+                {
+                    position = i;
+                    break;
+                }
+            }
+
+            Posetilac posetilac = posetioci[position];
+
+            Console.WriteLine("Menjanje podatka za: ");
+            Console.WriteLine("1 Ime");
+            Console.WriteLine("2 Prezime");
+            Console.WriteLine("3 Datum rodjenja");
+            Console.WriteLine("4 Ulicu");
+            Console.WriteLine("5 Broj ulice");
+            Console.WriteLine("6 Grad");
+            Console.WriteLine("7 Drzavu");
+            Console.WriteLine("8 Kontakt telefon");
+            Console.WriteLine("9 Email");
+            Console.WriteLine("10 Broj clanske karte");
+            Console.WriteLine("11 Trenutnu godinu clanstva");
+            Console.WriteLine("12 Status");
+            Console.WriteLine("13 Prosecna ocena recenzija");
+
+            string odabranaOpcija = Console.ReadLine();
+
+            Console.WriteLine("Unesi novu vrednost: ");
+
+            string nova_vrednost = Console.ReadLine();
+
+            switch (odabranaOpcija)
+            {
+                case "1":
+                    posetilac.Ime = nova_vrednost;
+                    break;
+                case "2":
+                    posetilac.Prezime = nova_vrednost;
+                    break;
+                case "3":
+                    posetilac.DatumRodjenja = DateOnly.ParseExact(nova_vrednost, new[] { "d.M.yyyy", "d.M.yyyy."});
+                    break;
+                case "4":
+                    posetilac.Adresa.Ulica = nova_vrednost;
+                    break;
+                case "5":
+                    posetilac.Adresa.Broj = nova_vrednost;
+                    break;
+                case "6":
+                    posetilac.Adresa.Grad = nova_vrednost;
+                    break;
+                case "7":
+                    posetilac.Adresa.Drzava = nova_vrednost;
+                    break;
+                case "8":
+                    posetilac.KontaktTelefon = nova_vrednost;
+                    break;
+                case "9":
+                    posetilac.Email = nova_vrednost;
+                    break;
+                case "10":
+                    posetilac.BrojClanskeKarte = nova_vrednost;
+                    break;
+                case "11":
+                    posetilac.TrenutnaGodinaClanstva = nova_vrednost;               // TODO
+                    break;                                                          // Da li je prosecna ocena recenzija podatak posetioca ili nesto drugo? U cemu se razlikuje od ocene?
+                case "12":
+                    posetilac.Status = Enum.Parse<StatusPosetioca>(nova_vrednost);  // TODO
+                    break;                                                          // Da li ovde trebam implementirati pitanje da li je korisnik uneo odgovarajuci format za status,prosecnuocenurecenzija?
+                case "13":
+                    posetilac.ProsecnaOcenaRecenzija = double.Parse(nova_vrednost);
+                    break;
+
+                    // Pitanje: da li treba ovako da implementiram f-ju za izmenu posetioca za neki njegov podatak ili projekat trazi da izmenim sve podatke tog posetioca?
+                    // TODO
+            }
+
+            SacuvajPosetioce(posetioci);
+            Console.WriteLine("Izmena je sacuvana.");
+
         }
     }
 }
