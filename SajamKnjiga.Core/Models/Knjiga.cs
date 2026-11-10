@@ -40,7 +40,7 @@ namespace SajamKnjiga.Core.Models
                 GodinaIzdanja.ToString(),
                 Cena.ToString(),
                 BrojStrana.ToString()
-                //List<Autor> Autori
+                //List<Autor> Autori = new List<Autor>
                  /*dodati nakon kreiranja klase Izdavac*/
                 //Izdavac
                 //public List<Posetilac> PosetiociKojiSuKupili
