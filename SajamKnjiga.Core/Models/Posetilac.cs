@@ -25,7 +25,7 @@ namespace SajamKnjiga.Core.Models
         {
             Ime = values[0];
             Prezime = values[1];
-            DatumRodjenja = values[2];
+            //DatumRodjenja = values[2];
             
             Adresa = new Adresa()
             {

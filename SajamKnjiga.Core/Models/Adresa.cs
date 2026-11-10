@@ -6,7 +6,6 @@ namespace SajamKnjiga.Core.Models
     {
         public string Ulica { get; set; } 
         public string Broj { get; set; } 
-
         public string Grad { get; set; } 
         public string Drzava { get; set; }
     }
