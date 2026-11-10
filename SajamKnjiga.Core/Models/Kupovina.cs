@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using SajamKnjiga.Core.Serialization;
 
 namespace SajamKnjiga.Core.Models
 {
-    public class Kupovina
+    public class Kupovina : ISerializable
     {
         public Posetilac Posetilac { get; set; }
         public Knjiga Knjiga { get; set; } 
@@ -31,5 +33,31 @@ namespace SajamKnjiga.Core.Models
         }
 
         public string Komentar {  get; set; }
+
+        public void FromCSV(string[] values)
+        {
+            Posetilac.BrojClanskeKarte = values[0];
+            Knjiga.ISBN = values[1];
+            DatumKupovine = DateOnly.ParseExact(values[2], new[] { "d.M.yyyy.", "d.M.yyyy", "M'/'d'/'yyyy" });
+
+           
+            Ocena = int.Parse(values[3]);
+            Komentar = values[4];
+        }
+
+        public string[] ToCSV()
+        {
+            string[] csvValues =
+            {
+               Posetilac.BrojClanskeKarte,
+               Knjiga.ISBN,
+               DatumKupovine.ToString("d.M.yyyy."),
+               Ocena.ToString(),
+               Komentar
+            };
+            return csvValues;
+        }
     }
 }
+    
+

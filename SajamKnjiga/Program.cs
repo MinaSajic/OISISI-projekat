@@ -13,11 +13,14 @@ namespace SajamKnjiga
         private static List<Autor> autori;
         private static List<Knjiga> knjige;
 
+        private static List<Kupovina> kupovina;
+
         static void Main(string[] args)
         {
             posetioci = UcitajPosetioce();
             autori = UcitajAutore();
             knjige = UcitajKnjige();
+            kupovina = UcitajKupovinu();
             bool izlazIzProgama = false;
 
             while (!izlazIzProgama)
@@ -180,6 +183,20 @@ namespace SajamKnjiga
         {
             Storage<Autor> storage = new Storage<Autor>("Autori.txt");
             storage.Save(autori);
+        }
+
+        private static List<Kupovina> UcitajKupovinu()
+        {
+            Storage<Kupovina> storage = new Storage<Kupovina>("Kupovina.txt");
+            List<Kupovina> kupovina = storage.Load();
+
+            return kupovina;
+        }
+
+        private static void  SacuvajKupovinu(List<Kupovina> kupovina)
+        {
+            Storage<Kupovina> storage = new Storage<Kupovina>("Kupovina.txt");
+            storage.Save(kupovina);
         }
 
         private static void PrikaziAutore()
