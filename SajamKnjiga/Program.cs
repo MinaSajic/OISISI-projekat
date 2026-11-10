@@ -36,7 +36,8 @@ namespace SajamKnjiga
                 Console.WriteLine("7 Izmena autora");
                 Console.WriteLine("8 Brisanje autora");
                 Console.WriteLine("9 Prikaz knjiga");
-                Console.WriteLine("10 Obrisi knjigu");
+                Console.WriteLine("10 Dodavanje knjige");
+                Console.WriteLine("11 Obrisi knjigu");
                 Console.WriteLine("0 Izlaz iz programa");
 
                 string odabranaOpcija = Console.ReadLine();
@@ -71,6 +72,9 @@ namespace SajamKnjiga
                         PrikaziKnjige();
                         break;
                     case "10":
+                        DodavanjeKnjige();
+                        break;
+                    case "11":
                         ObrisiKnjigu();
                         break;
                     case "0":
@@ -395,6 +399,37 @@ namespace SajamKnjiga
                 Console.WriteLine(knjiga.BrojStrana);
                 Console.WriteLine();
             }
+        }
+
+        private static void DodavanjeKnjige()
+        {
+            Knjiga knjiga = new Knjiga();
+
+            Console.WriteLine("Unesi ISBN knjige: ");
+            knjiga.ISBN = Console.ReadLine();
+
+            Console.WriteLine("Unesi naziv knjige: ");
+            knjiga.Naziv = Console.ReadLine();
+
+            Console.WriteLine("Unesi zanr knjige: ");
+            knjiga.Zanr = Console.ReadLine();
+
+            Console.WriteLine("Unesi godinu izdanja knjige: ");
+            knjiga.GodinaIzdanja = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Unesi cenu knjige: ");
+            knjiga.Cena = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Unesi broj strana knjige: ");
+            knjiga.BrojStrana = int.Parse(Console.ReadLine());
+
+            knjige.Add(knjiga);
+
+            // Mina
+            // TODO 
+            // Autori,PosetiociKojiSuKupili,PosetiociListaZelja -> ovo trebam kasnije implementirati za dodavanje_knjige
+
+
         }
 
         private static void ObrisiKnjigu()
