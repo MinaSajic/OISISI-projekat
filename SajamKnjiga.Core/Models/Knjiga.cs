@@ -23,7 +23,6 @@ namespace SajamKnjiga.Core.Models
 
         public List<Autor> Autori { get; set; } = new List<Autor>();
 
-        /*dodati nakon kreiranja klase Izdavac*/
         //public Izdavac Izdavac { get; set; } 
 
         public List<Posetilac> PosetiociKojiSuKupili { get; set; } = new List<Posetilac>();
