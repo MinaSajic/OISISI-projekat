@@ -4,12 +4,16 @@ using System.ComponentModel.Design;
 using System.Runtime.Versioning;
 using System.Text;
 using System.IO;
+using SajamKnjiga.Core.Services;
 
 namespace SajamKnjiga
 {
     internal class Program
     {
-        private static List<Posetilac> posetioci;
+        private static PosetilacService posetiociServis;
+        // TODO
+
+        //private static List<Posetilac> posetioci;  // obrisati i ostale kada se implementiraju service i DAO klase za njih
         private static List<Autor> autori;
         private static List<Knjiga> knjige;
 
@@ -17,7 +21,10 @@ namespace SajamKnjiga
 
         static void Main(string[] args)
         {
-            posetioci = UcitajPosetioce();
+            posetiociServis = new PosetilacService();
+            // TODO 
+
+            //posetioci = UcitajPosetioce(); // obrisati i ostale kada se implementiraju service i DAO klase za njih
             autori = UcitajAutore();
             knjige = UcitajKnjige();
             kupovina = UcitajKupovinu();
@@ -37,7 +44,8 @@ namespace SajamKnjiga
                 Console.WriteLine("8 Brisanje autora");
                 Console.WriteLine("9 Prikaz knjiga");
                 Console.WriteLine("10 Dodavanje knjige");
-                Console.WriteLine("11 Obrisi knjigu");
+                Console.WriteLine("11 Izmena knjige");
+                Console.WriteLine("12 Brisanje knjige");
                 Console.WriteLine("0 Izlaz iz programa");
 
                 string odabranaOpcija = Console.ReadLine();
@@ -75,6 +83,9 @@ namespace SajamKnjiga
                         DodavanjeKnjige();
                         break;
                     case "11":
+                        IzmeniKnjigu();
+                        break;
+                    case "12":
                         ObrisiKnjigu();
                         break;
                     case "0":
@@ -86,7 +97,7 @@ namespace SajamKnjiga
                 }
             }
 
-            SacuvajPosetioce(posetioci);
+            //SacuvajPosetioce(posetioci);
             SacuvajAutore(autori);
             SacuvajKnjige(knjige);
         }
@@ -95,13 +106,11 @@ namespace SajamKnjiga
         {
 
             Console.WriteLine("Prikaz posetioca:");
+            List<Posetilac> posetioci = posetiociServis.DobaviSvePosetioce();
             foreach (Posetilac posetilac in posetioci)
             {
                 Console.WriteLine(posetilac);
-
             }
-
-
         }
 
         private static void DodajPosetioca()
@@ -156,23 +165,14 @@ namespace SajamKnjiga
             Console.WriteLine("Unesi prosecnu ocenu recenzija: ");
             posetilac.ProsecnaOcenaRecenzija = double.Parse(Console.ReadLine());
 
-            posetioci.Add(posetilac);
-        }
-
-
-
-        private static void SacuvajPosetioce(List<Posetilac> posetioci)
-        {
-            Storage<Posetilac> storage = new Storage<Posetilac>("Posetioci.txt");
-            storage.Save(posetioci);
-        }
-
-        private static List<Posetilac> UcitajPosetioce()
-        {
-            Storage<Posetilac> storage = new Storage<Posetilac>("Posetioci.txt");
-            List<Posetilac> posetioci = storage.Load();
-
-            return posetioci;
+            if (posetiociServis.PostojiLiPosetilac(posetilac.BrojClanskeKarte))
+            {
+                Console.WriteLine("Posetilac sa datim brojem clanske karte vec postoji");
+            }
+            else
+            {
+                posetiociServis.DodajPosetioca(posetilac);
+            }
         }
 
         private static List<Autor> UcitajAutore()
@@ -197,7 +197,7 @@ namespace SajamKnjiga
             return kupovina;
         }
 
-        private static void  SacuvajKupovinu(List<Kupovina> kupovina)
+        private static void SacuvajKupovinu(List<Kupovina> kupovina)
         {
             Storage<Kupovina> storage = new Storage<Kupovina>("Kupovina.txt");
             storage.Save(kupovina);
@@ -432,6 +432,76 @@ namespace SajamKnjiga
 
         }
 
+        private static void IzmeniKnjigu()
+        {
+            Console.WriteLine("Unesi ISBN knjige: ");
+            string isbn = Console.ReadLine();
+            int position = -1;
+
+            for (int i = 0; i < knjige.Count(); i++)
+            {
+                if (knjige[i].ISBN == isbn)
+                {
+                    position = i;
+                    break;
+                }
+            }
+
+            if (position == -1)
+            {
+                Console.WriteLine("Knjiga nije pronadjena.");
+                return;
+            }
+
+            Knjiga knjiga = knjige[position];
+
+            Console.WriteLine("Menjanje podatka za: ");
+            Console.WriteLine("1 ISBN");
+            Console.WriteLine("2 Naziv");
+            Console.WriteLine("3 Zanr");
+            Console.WriteLine("4 Godinu izdanja");
+            Console.WriteLine("5 Cenu");
+            Console.WriteLine("6 Broj strana");
+            Console.WriteLine("7 Autore");
+            Console.WriteLine("8 Izdavaca");
+
+            string odabranaOpcija = Console.ReadLine();
+
+            Console.WriteLine("Unesi novu vrednost");
+
+            string nova_vrednost = Console.ReadLine();
+
+            switch (odabranaOpcija)
+            {
+                case "1":
+                    knjiga.ISBN = nova_vrednost;
+                    break;
+                case "2":
+                    knjiga.Naziv = nova_vrednost;
+                    break;
+                case "3":
+                    knjiga.Zanr = nova_vrednost;
+                    break;
+                case "4":
+                    knjiga.GodinaIzdanja = int.Parse(nova_vrednost);
+                    break;
+                case "5":
+                    knjiga.Cena = int.Parse(nova_vrednost);
+                    break;
+                case "6":
+                    knjiga.BrojStrana = int.Parse(nova_vrednost);
+                    break;
+                case "7":
+                    knjiga.ISBN = nova_vrednost;
+                    break;
+
+            }
+
+            SacuvajKnjige(knjige);
+            Console.WriteLine("Izmena je sacuvana");
+
+        }
+
         private static void ObrisiKnjigu()
         {
             Console.WriteLine("Unesi ISBN knjige koju zelis da obrises:");
@@ -455,25 +525,15 @@ namespace SajamKnjiga
 
             string BrK = Console.ReadLine();
 
-            int position = -1;
-
-            for (int i = 0; i < posetioci.Count; i++)
+            if (posetiociServis.PostojiLiPosetilac(BrK))
             {
-                if (posetioci[i].BrojClanskeKarte == BrK)
-                {
-                    position = i;
-                    break;
-                }
+                posetiociServis.IzbrisiPosetioca(BrK);
+                Console.WriteLine("Posetilac je obrisan iz liste.");
             }
-
-            if (position == -1)
+            else
             {
-                Console.WriteLine("Posetilac nije pronadjen");
-                return;
+                Console.WriteLine("Posetilac sa datim brojem clanske karte ne postoji");
             }
-
-            posetioci.RemoveAt(position);
-            Console.WriteLine("Posetilac je obrisan iz liste.");
         }
 
         private static void IzmeniPosetioca()
@@ -481,24 +541,13 @@ namespace SajamKnjiga
             Console.WriteLine("Unesi broj clanske karte: ");
             string BrK = Console.ReadLine();
 
-            int position = -1;
-
-            for (int i = 0; i < posetioci.Count; i++)
+            if (!posetiociServis.PostojiLiPosetilac(BrK))
             {
-                if (posetioci[i].BrojClanskeKarte == BrK)
-                {
-                    position = i;
-                    break;
-                }
-            }
-
-            if (position == -1)
-            {
-                Console.WriteLine("Posetilac nije pronadjen");
+                Console.WriteLine("Posetilac sa datim brojem clanske karte ne postoji");
                 return;
             }
 
-            Posetilac posetilac = posetioci[position];
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(BrK);
 
             Console.WriteLine("Menjanje podatka za: ");
             Console.WriteLine("1 Ime");
@@ -567,8 +616,14 @@ namespace SajamKnjiga
                     // TODO
             }
 
-            SacuvajPosetioce(posetioci);
+            //SacuvajPosetioce(posetioci);
+            posetiociServis.IzmeniPosetioca(posetilac);
             Console.WriteLine("Izmena je sacuvana.");
+
+        }
+
+        private static void PretragaPosetilaca()
+        {
 
         }
     }

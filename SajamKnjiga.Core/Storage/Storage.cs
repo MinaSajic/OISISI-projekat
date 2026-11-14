@@ -6,7 +6,7 @@ namespace SajamKnjiga.Core.Storage;
 
 public class Storage<T> where T : ISerializable, new()
 {
-    private readonly string _filePath = @"../../../Data/{0}";
+    private readonly string _filePath = @"../../../../SajamKnjiga.Core/Data/{0}";   // da li da data ne bude u okviru solution-a, nego na nekoj izdvojenoj lokaciji
     private readonly Serializer<T> _serializer = new();
 
     public Storage(string fileName)
