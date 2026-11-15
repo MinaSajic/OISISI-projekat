@@ -12,10 +12,11 @@ namespace SajamKnjiga
     {
         private static PosetilacService posetiociServis;
         // TODO
+        private static KnjigaService knjigeServis;
 
         //private static List<Posetilac> posetioci;  // obrisati i ostale kada se implementiraju service i DAO klase za njih
         private static List<Autor> autori;
-        private static List<Knjiga> knjige;
+       // private static List<Knjiga> knjige;
 
         private static List<Kupovina> kupovina;
 
@@ -23,10 +24,11 @@ namespace SajamKnjiga
         {
             posetiociServis = new PosetilacService();
             // TODO 
+            knjigeServis = new KnjigaService();
 
             //posetioci = UcitajPosetioce(); // obrisati i ostale kada se implementiraju service i DAO klase za njih
             autori = UcitajAutore();
-            knjige = UcitajKnjige();
+           // knjige = UcitajKnjige();
             kupovina = UcitajKupovinu();
             bool izlazIzProgama = false;
 
@@ -99,7 +101,7 @@ namespace SajamKnjiga
 
             //SacuvajPosetioce(posetioci);
             SacuvajAutore(autori);
-            SacuvajKnjige(knjige);
+           // SacuvajKnjige(knjige);
         }
 
         private static void PrikaziPosetioce()
@@ -387,17 +389,12 @@ namespace SajamKnjiga
 
         private static void PrikaziKnjige()
         {
-            Console.WriteLine("Prikaz knjiga:");
 
+            Console.WriteLine("Prikaz knjiga:");
+            List<Knjiga> knjige = knjigeServis.DobaviSveKnjige();
             foreach (Knjiga knjiga in knjige)
             {
-                Console.WriteLine(knjiga.ISBN);
-                Console.WriteLine(knjiga.Naziv);
-                Console.WriteLine(knjiga.Zanr);
-                Console.WriteLine(knjiga.GodinaIzdanja);
-                Console.WriteLine(knjiga.Cena);
-                Console.WriteLine(knjiga.BrojStrana);
-                Console.WriteLine();
+                Console.WriteLine(knjiga);
             }
         }
 
@@ -423,7 +420,7 @@ namespace SajamKnjiga
             Console.WriteLine("Unesi broj strana knjige: ");
             knjiga.BrojStrana = int.Parse(Console.ReadLine());
 
-            knjige.Add(knjiga);
+            knjigeServis.DodavanjeKnjige(knjiga);
 
             // Mina
             // TODO 
@@ -436,24 +433,10 @@ namespace SajamKnjiga
         {
             Console.WriteLine("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
-            int position = -1;
 
-            for (int i = 0; i < knjige.Count(); i++)
-            {
-                if (knjige[i].ISBN == isbn)
-                {
-                    position = i;
-                    break;
-                }
-            }
 
-            if (position == -1)
-            {
-                Console.WriteLine("Knjiga nije pronadjena.");
-                return;
-            }
 
-            Knjiga knjiga = knjige[position];
+            Knjiga knjiga = knjigeServis.DobaviKnjigu(isbn);
 
             Console.WriteLine("Menjanje podatka za: ");
             Console.WriteLine("1 ISBN");
@@ -497,8 +480,9 @@ namespace SajamKnjiga
 
             }
 
-            SacuvajKnjige(knjige);
-            Console.WriteLine("Izmena je sacuvana");
+            knjigeServis.IzmeniKnjigu(knjiga);
+            Console.WriteLine("Izmena je sacuvana.");
+
 
         }
 
@@ -507,16 +491,9 @@ namespace SajamKnjiga
             Console.WriteLine("Unesi ISBN knjige koju zelis da obrises:");
             string isbn = Console.ReadLine();
 
-            Knjiga knjiga = knjige.Find(k => k.ISBN == isbn);
+            //TODO: dodati kao i kod Posetilac "PostojiLiPosetilac" neku gresku ako treba
 
-            if (knjiga == null)
-            {
-                Console.WriteLine("Knjiga nije pronadjena!");
-                return;
-            }
-
-            knjige.Remove(knjiga);
-            Console.WriteLine("Knjiga je uspesno obrisana!");
+            knjigeServis.IzbrisiKnjigu(isbn);
         }
 
         private static void BrisanjePosetioca()

@@ -25,6 +25,10 @@ namespace SajamKnjiga.Core.Models
 
         //public Izdavac Izdavac { get; set; } 
 
+        public override string ToString()
+        {
+            return $"{ISBN} | {Naziv} | {Zanr} | {GodinaIzdanja} | {Cena} din | {BrojStrana} str.";
+        }
         public List<string> PosetiociKojiSuKupili { get; set; } = new List<string>();
 
         public List<string> PosetiociListaZelja { get; set; } = new List<string>();
