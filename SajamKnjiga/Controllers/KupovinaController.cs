@@ -57,8 +57,8 @@ namespace SajamKnjiga.Controllers
                     case "4":
                         BrisanjeKupovine();
                         break;
-                    // TODO
-                    // Napraviti case za nazad
+                    case "0":
+                        return;
                     default:
                         Console.WriteLine("Pogresna opcija");
                         break;

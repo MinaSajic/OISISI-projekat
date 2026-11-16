@@ -68,7 +68,7 @@ namespace SajamKnjiga.Core.DAO
             int pozicija = adrese.IndexOf(postojecaAdresa);
             adrese[pozicija] = adresa;
 
-            storage.Save(adrese)
+            storage.Save(adrese);
         }
 
     }
