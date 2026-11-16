@@ -39,20 +39,23 @@ namespace SajamKnjiga.Controllers
 
                 switch (odabranaOpcija)
                 {
-                    case "9":
+                    case "1":
                         PrikaziKnjige();
                         break;
-                    case "10":
+                    case "2":
+                        DetaljiOKnjizi();
+                        break;
+                    case "3":
                         DodavanjeKnjige();
                         break;
-                    case "11":
+                    case "4":
                         IzmeniKnjigu();
                         break;
-                    case "12":
+                    case "5":
                         ObrisiKnjigu();
                         break;
-                    // TODO
-                    // dodati case "0" za NAZAD, ne za izlaz
+                    case "0":
+                        return;
                     default:
                         Console.WriteLine("Pogresna opcija");
                         break;
@@ -69,6 +72,11 @@ namespace SajamKnjiga.Controllers
             {
                 Console.WriteLine(knjiga);
             }
+        }
+
+        private void DetaljiOKnjizi()
+        {
+            Console.WriteLine("TODO->URADITI");
         }
 
         private void DodavanjeKnjige()

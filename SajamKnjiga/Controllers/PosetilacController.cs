@@ -45,8 +45,9 @@ namespace SajamKnjiga.Controllers
                     case "1":
                         PrikaziPosetioce();
                         break;
-                    // TODO
-                    // Prikazati podatke o konkretnom posetiocu
+                    case "2":
+                        DetaljiOPosetiocu();
+                        break;
                     case "3":
                         DodajPosetioca();
                         break;
@@ -56,8 +57,8 @@ namespace SajamKnjiga.Controllers
                     case "5":
                         IzmeniPosetioca();
                         break;
-                    // TODO
-                    // dodati case "0" za NAZAD, ne za izlaz
+                    case "0":
+                        return;
                     default:
                         Console.WriteLine("Pogresna opcija");
                         break;
@@ -99,6 +100,46 @@ namespace SajamKnjiga.Controllers
             Console.WriteLine($"Ukupno posetilaca: {posetioci.Count}");
         }
 
+        private void DetaljiOPosetiocu()
+        {
+            Console.WriteLine("Unesi broj clanske karte: ");
+            string BrojClanskeKarte = Console.ReadLine()?.Trim() ?? "";
+
+           
+
+            if (!posetiociServis.PostojiLiPosetilac(BrojClanskeKarte))
+            {
+                Console.WriteLine("Posetilac sa tim brojem clanske karte ne postoji.");
+                return;
+            }
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(BrojClanskeKarte);
+
+            string status = posetilac.Status == StatusPosetioca.V ? "VIP" : "Redovan";
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine(new string('-', 30));
+
+            Console.ForegroundColor= prethodnaBoja;
+
+            Console.WriteLine($"{posetilac.Ime} {posetilac.Prezime}");
+
+            Console.ForegroundColor= ConsoleColor.Magenta ;
+            Console.WriteLine(new string('-', 30));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            Console.WriteLine($"Clanska karta:  {posetilac.BrojClanskeKarte} ");
+            Console.WriteLine($"Datum Rodjenja:  {posetilac.DatumRodjenja} ");
+            Console.WriteLine($"Adresa: {posetilac.Adresa.Ulica} {posetilac.Adresa.Broj}," +
+                              $"{posetilac.Adresa.Grad} {posetilac.Adresa.Drzava}");
+            Console.WriteLine($"Kontakt Telefon:  {posetilac.KontaktTelefon} ");
+            Console.WriteLine($"Email:  {posetilac.Email} ");
+            Console.WriteLine($"Trenutna godina clanstva:  {posetilac.TrenutnaGodinaClanstva} ");
+            Console.WriteLine($"Status:  {status} ");
+            Console.WriteLine($"Prosecna ocena recenzija:  {posetilac.ProsecnaOcenaRecenzija} ");
+        }
+       
 
         private void DodajPosetioca()
         {
