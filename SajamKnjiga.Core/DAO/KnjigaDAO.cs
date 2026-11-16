@@ -14,27 +14,36 @@ namespace SajamKnjiga.Core.DAO
 
         private Storage<Knjiga> storage;
 
+        private int NadjiPozicijuKnjige(string isbn)
+        {
+            for (int i = 0; i < knjige.Count; i++)
+            {
+                if (knjige[i].ISBN == isbn)
+                {
+                    return i;
+                }
+            }
+            return -1;
 
+        }
         public KnjigaDAO()
         {
             storage = new Storage<Knjiga>("Knjige.txt");
 
             knjige = storage.Load();
+
+          
         }
 
-        public Knjiga DobaviKnjigu(string ISBN)
+        public Knjiga DobaviKnjigu(string isbn)
         {
-            int position = -1;
+            int pozicija = NadjiPozicijuKnjige(isbn);
 
-            for (int i = 0; i < knjige.Count; i++)
+            if(pozicija == -1)
             {
-                if (knjige[i].ISBN == ISBN)
-                {
-                    position = i;
-                    break;
-                }
+                return null;
             }
-            return knjige[position];
+            return knjige[pozicija];
         }
 
 
@@ -44,9 +53,23 @@ namespace SajamKnjiga.Core.DAO
             return knjige;
         }
 
+        public bool PostojiLiKnjiga(string isbn)
+        {
+            foreach (Knjiga knjiga in knjige)
+            {
+                if(knjiga.ISBN == isbn)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
 
         internal void DodavanjeKnjige(Knjiga knjiga)
         {
+           
             knjige.Add(knjiga);  // ubacujemo novu knjigu u listu
             storage.Save(knjige); // upisuje odmah celu izmenjenu listu u Knjige.txt
 
@@ -55,36 +78,33 @@ namespace SajamKnjiga.Core.DAO
         internal void ObrisiKnjigu(string isbn)
         {
 
-            int position = -1;
+            int pozicija = NadjiPozicijuKnjige(isbn);
 
-            for (int i = 0; i < knjige.Count; i++)
+            if(pozicija == -1)
             {
-                if (knjige[i].ISBN == isbn)
-                {
-                    position = i;
-                    break;
-                }
+                return;
             }
-
-            knjige.RemoveAt(position);
+            knjige.RemoveAt(pozicija);
             storage.Save(knjige);
         }
 
         internal void IzmeniKnjigu(Knjiga knjiga)
         {
-            int position = -1;
+            Knjiga original = DobaviKnjigu(knjiga.ISBN);
 
-            for (int i = 0; i < knjige.Count; i++)
+            if(original == null)
             {
-                if (knjige[i].ISBN == knjiga.ISBN)
-                {
-                    position = i;
-                    break;
-                }
+                return;
             }
 
-            knjige[position] = knjiga;
+            original.Naziv = knjiga.Naziv; // ovde menjamo ovo original sa podacima iz kopije
+            original.Zanr = knjiga.Zanr;
+            original.GodinaIzdanja = knjiga.GodinaIzdanja;
+            original.Cena = knjiga.Cena;
+            original.BrojStrana = knjiga.BrojStrana;
+
             storage.Save(knjige);
+
         }
     }
 

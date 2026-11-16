@@ -27,31 +27,44 @@ namespace SajamKnjiga.Core.Services
             return knjigaDAO.DobaviSveKnjige();
         }
 
-        public void DodavanjeKnjige(Knjiga knjiga)
+        public bool PostojiLiKnjiga(string isbn)
         {
-            // TODO: dodati gresku
+            return knjigaDAO.PostojiLiKnjiga(isbn);
+        }
+
+        public bool DodavanjeKnjige(Knjiga knjiga)
+        {
+
+            if (knjigaDAO.PostojiLiKnjiga(knjiga.ISBN))
+            {
+                return false;
+            }
 
             knjigaDAO.DodavanjeKnjige(knjiga);
 
-
+            return true;
         }
 
-        public void IzbrisiKnjigu(string isbn)
+        public bool IzbrisiKnjigu(string isbn)
         {
-           /* if (!knjigaDAO.PostojiLiKnjiga(isbn))
+            if (!knjigaDAO.PostojiLiKnjiga(isbn))
             {
-                return;
-                // TODO: za gresku
-                
+                return false;
             }
-           */
 
             knjigaDAO.ObrisiKnjigu(isbn);
+            return true;
         }
 
-        public void IzmeniKnjigu(Knjiga knjiga)
+        public bool IzmeniKnjigu(Knjiga knjiga)
         {
+
+            if (!knjigaDAO.PostojiLiKnjiga(knjiga.ISBN))
+            {
+                return false;
+            }
             knjigaDAO.IzmeniKnjigu(knjiga);
+            return true;
         }
     }
 

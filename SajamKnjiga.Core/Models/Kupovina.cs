@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using SajamKnjiga.Core.Serialization;
+using SajamKnjiga.Core.Utils;
 
 namespace SajamKnjiga.Core.Models
 {
@@ -34,11 +35,31 @@ namespace SajamKnjiga.Core.Models
 
         public string Komentar {  get; set; }
 
+        public override string ToString()
+        {
+            return $"Broj članske karte: {Posetilac?.BrojClanskeKarte}, " +
+                   $"ISBN knjige: {Knjiga?.ISBN}, " +
+                   $"Datum kupovine: {DatumKupovine:dd.MM.yyyy.}, " +
+                   $"Ocena: {Ocena}, Komentar: {Komentar}";
+        }
+
+        public Kupovina Kopija()
+        {
+            return new Kupovina
+            {
+                Posetilac = Posetilac,
+                Knjiga = Knjiga,
+                DatumKupovine = DatumKupovine,
+                Ocena = Ocena,
+                Komentar = Komentar
+            };
+        }
+
         public void FromCSV(string[] values)
         {
-            Posetilac.BrojClanskeKarte = values[0];
-            Knjiga.ISBN = values[1];
-            DatumKupovine = DateOnly.ParseExact(values[2], new[] { "d.M.yyyy.", "d.M.yyyy", "M'/'d'/'yyyy" });
+            Posetilac = new Posetilac { BrojClanskeKarte = values[0] };
+            Knjiga = new Knjiga { ISBN = values[1] };
+            DatumKupovine = DatumFormat.TekstUDatum(values[2]);
 
            
             Ocena = int.Parse(values[3]);
@@ -51,7 +72,7 @@ namespace SajamKnjiga.Core.Models
             {
                Posetilac.BrojClanskeKarte,
                Knjiga.ISBN,
-               DatumKupovine.ToString("d.M.yyyy."),
+               DatumFormat.DatumUTekst(DatumKupovine),
                Ocena.ToString(),
                Komentar
             };

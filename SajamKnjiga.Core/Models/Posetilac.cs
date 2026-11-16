@@ -1,4 +1,5 @@
 ﻿using SajamKnjiga.Core.Serialization;
+using SajamKnjiga.Core.Utils;
 using System.Globalization;
 
 namespace SajamKnjiga.Core.Models
@@ -22,6 +23,12 @@ namespace SajamKnjiga.Core.Models
         public StatusPosetioca Status { get; set; }
         public double ProsecnaOcenaRecenzija { get; set; }
 
+        public List<string> IsbnKnjigaNaListiZelja { get; set; } = new List<string>();
+
+        public List<string> ListaZelja { get; set; } = new List<string>();
+
+        public List<string> KupovinePosetioca { get; set; } = new List<string>();
+
         public override string ToString()
         {
             return $"{BrojClanskeKarte} | {Ime} | {Prezime} | " +
@@ -31,11 +38,33 @@ namespace SajamKnjiga.Core.Models
             // Malo lepsi format od ovog da napravim za konzolu
         }
 
+        public Posetilac Kopija()
+        {
+            return new Posetilac { 
+            Ime = Ime,
+            Prezime = Prezime,
+            DatumRodjenja = DatumRodjenja,
+            Adresa = new Adresa
+            {
+                Ulica = Adresa.Ulica,
+                Broj = Adresa.Broj,
+                Grad = Adresa.Grad,
+                Drzava = Adresa.Drzava,
+            },
+            KontaktTelefon = KontaktTelefon,
+            Email = Email,
+            BrojClanskeKarte = BrojClanskeKarte,
+            TrenutnaGodinaClanstva = TrenutnaGodinaClanstva,
+            Status = Status,
+            ProsecnaOcenaRecenzija = ProsecnaOcenaRecenzija,
+            IsbnKnjigaNaListiZelja = new List<string>(IsbnKnjigaNaListiZelja)
+            };
+        }
         public void FromCSV(string[] values)
         {
             Ime = values[0];
             Prezime = values[1];
-            DatumRodjenja = DateOnly.ParseExact(values[2],new[] { "d.M.yyyy.", "d.M.yyyy", "M'/'d'/'yyyy" });
+            DatumRodjenja = DatumFormat.TekstUDatum(values[2]);
             
             Adresa = new Adresa()
             {
@@ -51,6 +80,13 @@ namespace SajamKnjiga.Core.Models
             TrenutnaGodinaClanstva = values[10];
             Status = Enum.Parse<StatusPosetioca>(values[11]);
             ProsecnaOcenaRecenzija = double.Parse(values[12]);
+            IsbnKnjigaNaListiZelja = new List<string>();
+            if (values.Length > 13 && !string.IsNullOrWhiteSpace(values[13]))
+            {
+                IsbnKnjigaNaListiZelja = values[13]
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
+            }
         }
 
         public string[] ToCSV()
@@ -59,7 +95,7 @@ namespace SajamKnjiga.Core.Models
             {
                 Ime,
                 Prezime,
-                DatumRodjenja.ToString("d.M.yyyy."),
+                DatumFormat.DatumUTekst(DatumRodjenja),
                 Adresa.Ulica,
                 Adresa.Broj,
                 Adresa.Grad,
@@ -69,7 +105,8 @@ namespace SajamKnjiga.Core.Models
                 BrojClanskeKarte,
                 TrenutnaGodinaClanstva,
                 Status.ToString(),
-                ProsecnaOcenaRecenzija.ToString()
+                ProsecnaOcenaRecenzija.ToString(),
+                string.Join(";", IsbnKnjigaNaListiZelja)
             };
             return csvValues;
         }
