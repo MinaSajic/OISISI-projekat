@@ -13,6 +13,19 @@ namespace SajamKnjiga.Core.DAO
         private List<Posetilac> posetioci;
         private Storage<Posetilac> storage;
 
+        private int NadjiPozicijuPosetioca(string brojClanskeKarte)
+        {
+
+            for (int i = 0; i < posetioci.Count; i++)
+            {
+                if (posetioci[i].BrojClanskeKarte == brojClanskeKarte)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
 
         public PosetilacDAO()
         {
@@ -23,18 +36,14 @@ namespace SajamKnjiga.Core.DAO
 
         public Posetilac DobaviPosetioca(string brojClanskeKarte)
         {
-            int position = -1;
+            int pozicija = NadjiPozicijuPosetioca(brojClanskeKarte);
 
-            for (int i = 0; i < posetioci.Count; i++)
+            if(pozicija == -1)
             {
-                if (posetioci[i].BrojClanskeKarte == brojClanskeKarte)
-                {
-                    position = i;
-                    break;
-                }
+                return null;
             }
 
-            return posetioci[position];
+            return posetioci[pozicija];
         }
 
         public List<Posetilac> DobaviSvePosetioce()
@@ -65,35 +74,36 @@ namespace SajamKnjiga.Core.DAO
         internal void IzbrisiPosetioca(string brojClanskeKarte)
         {
 
-            int position = -1;
+            int pozicija = NadjiPozicijuPosetioca(brojClanskeKarte);
 
-            for (int i = 0; i < posetioci.Count; i++)
+            if (pozicija == -1)
             {
-                if (posetioci[i].BrojClanskeKarte == brojClanskeKarte)
-                {
-                    position = i;
-                    break;
-                }
+                return;
             }
-
-            posetioci.RemoveAt(position);
+            posetioci.RemoveAt(pozicija);
             storage.Save(posetioci);
         }
 
         internal void IzmeniPosetioca(Posetilac posetilac)
         {
-            int position = -1;
 
-            for (int i = 0; i < posetioci.Count; i++)
+            Posetilac original = DobaviPosetioca(posetilac.BrojClanskeKarte);
+
+            if(original == null)
             {
-                if (posetioci[i].BrojClanskeKarte == posetilac.BrojClanskeKarte)
-                {
-                    position = i;
-                    break;
-                }
+                return;
             }
 
-            posetioci[position] = posetilac;
+            original.Ime = posetilac.Ime;   // original se menja ovde sa novim podacima iz kopije
+            original.Prezime = posetilac.Prezime;
+            original.DatumRodjenja = posetilac.DatumRodjenja;
+            original.Adresa = posetilac.Adresa;
+            original.KontaktTelefon = posetilac.KontaktTelefon;
+            original.Email = posetilac.Email;
+            original.TrenutnaGodinaClanstva = posetilac.TrenutnaGodinaClanstva;
+            original.Status = posetilac.Status;
+            original.ProsecnaOcenaRecenzija = posetilac.ProsecnaOcenaRecenzija;
+
             storage.Save(posetioci);
         }
     }

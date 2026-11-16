@@ -22,9 +22,9 @@ namespace SajamKnjiga.Core.Services
             return posetilacDAO.PostojiLiPosetilac(brojClanskeKarte);
         }
 
-        public Posetilac DobaviPosetioca(string brk)
+        public Posetilac DobaviPosetioca(string brojClanskeKarte)
         {
-            return posetilacDAO.DobaviPosetioca(brk);
+            return posetilacDAO.DobaviPosetioca(brojClanskeKarte);
         }
 
         public List<Posetilac> DobaviSvePosetioce()
@@ -32,35 +32,41 @@ namespace SajamKnjiga.Core.Services
             return posetilacDAO.DobaviSvePosetioce();
         }
 
-        public void DodajPosetioca(Posetilac posetilac)
+        public bool DodajPosetioca(Posetilac posetilac)
         {
             if (posetilacDAO.PostojiLiPosetilac(posetilac.BrojClanskeKarte))
             {
-                return;
-                // TODO
-                // da neku gresku izbaci
+                return false;  // taj posetilac vec postoji, ne treba ga dodati, return false
+               
             }
 
-            posetilacDAO.DodajPosetioca(posetilac);
+            posetilacDAO.DodajPosetioca(posetilac); // posetilac ne postoji, dodajemo ga
+            return true;
 
            
         }
 
-        public void IzbrisiPosetioca(string brojClanskeKarte)
+        public bool IzbrisiPosetioca(string brojClanskeKarte)
         {
             if (!posetilacDAO.PostojiLiPosetilac(brojClanskeKarte))
             {
-                return;
+                return false;                    // ako posetilac ne postoji nemamo koga da izbrisemo, return false
                 // TODO
                 // da neku gresku izbaci
             }
 
             posetilacDAO.IzbrisiPosetioca(brojClanskeKarte);
+            return true;
         }
 
-        public void IzmeniPosetioca(Posetilac posetilac)
+        public bool IzmeniPosetioca(Posetilac posetilac)
         {
+            if (!posetilacDAO.PostojiLiPosetilac(posetilac.BrojClanskeKarte))
+            {
+                return false;    // ako posetilac ne postoji, nemamo koga da menjamo
+            }
             posetilacDAO.IzmeniPosetioca(posetilac);
+            return true;
         }
     }
 }

@@ -39,10 +39,10 @@ public class Storage<T> where T : ISerializable, new()
 
     public void Save(List<T> objects)
     {
-        string serializedVehicles = _serializer.ToCSV(objects);
+        string serializedObjects = _serializer.ToCSV(objects);
         using (StreamWriter streamWriter = new StreamWriter(_filePath))
         {
-            streamWriter.Write(serializedVehicles);
+            streamWriter.Write(serializedObjects);
         }
     }
 }
