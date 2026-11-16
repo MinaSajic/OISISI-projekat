@@ -1,9 +1,4 @@
 ﻿using SajamKnjiga.Core.Models;
-using SajamKnjiga.Core.Storage;
-using System.ComponentModel.Design;
-using System.Runtime.Versioning;
-using System.Text;
-using System.IO;
 using SajamKnjiga.Core.Services;
 
 namespace SajamKnjiga

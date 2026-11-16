@@ -43,7 +43,6 @@ namespace SajamKnjiga.Core.Models
                 E_mail,
                 LK,
                 GodineIskustva.ToString()
-                //List<Knjiga> Knjige
             };
 
             return csvValues;
@@ -65,7 +64,6 @@ namespace SajamKnjiga.Core.Models
             E_mail = values[8];
             LK = values[9];
             GodineIskustva = int.Parse(values[10]);
-            //List<Knjiga> Knjige
         }
     }
 }
