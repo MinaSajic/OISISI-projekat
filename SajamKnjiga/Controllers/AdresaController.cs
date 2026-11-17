@@ -41,8 +41,7 @@ namespace SajamKnjiga.Controllers
                         PrikaziAdrese();
                         break;
                     case "2":
-                        //TODO
-                        //detaljan prikaz adrese
+                        PrikaziAdresu();
                         break;
                     case "3":
                         DodajAdresu();
@@ -64,23 +63,69 @@ namespace SajamKnjiga.Controllers
 
         }
 
-        //TODO
-        //Mia
         private void PrikaziAdrese()
         {
-            Console.WriteLine("Prikaz adrese:");
-
             List<Adresa> adrese = adresaServis.DobaviSveAdrese();
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("ADRESE SAJMA");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"ID", -8}{"Ulica", -30}{"Broj", -10}{"Grad", -20}{"Drzava", -20}");
+
+            Console.WriteLine(new string('-', 88));
+
+            Console.ForegroundColor = prethodnaBoja;
 
             foreach (Adresa adresa in adrese)
             {
-                Console.WriteLine(adresa.Id);
-                Console.WriteLine(adresa.Ulica);
-                Console.WriteLine(adresa.Broj);
-                Console.WriteLine(adresa.Grad);
-                Console.WriteLine(adresa.Drzava);
-                Console.WriteLine();
+                Console.WriteLine(
+                    $"{adresa.Id, -8}{adresa.Ulica, -30}{adresa.Broj, -10}{adresa.Grad, -20}{adresa.Drzava, -20}");
             }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno adresa: {adrese.Count}");
+        }
+
+        private void PrikaziAdresu()
+        {
+            Console.WriteLine("Unesi ID adrese:");
+            
+            if(!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("ID mora biti broj");
+                return;
+            }
+
+            Adresa adresa = adresaServis.DobaviAdresu(id);
+
+            if(adresa == null)
+            {
+                Console.WriteLine("Adresa nije pronadjena!");
+                return;
+            }
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("PODACI O ADRESI");
+            Console.WriteLine(new string('-', 48));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            Console.WriteLine($"{"ID", -20}{adresa.Id}");
+            Console.WriteLine($"{"Ulica", -20}{adresa.Ulica}");
+            Console.WriteLine($"{"Broj", -20}{adresa.Broj}");
+            Console.WriteLine($"{"Grad", -20}{adresa.Grad}");
+            Console.WriteLine($"{"Drzava", -20}{adresa.Drzava}");
+            Console.WriteLine();
         }
 
         private void DodajAdresu()

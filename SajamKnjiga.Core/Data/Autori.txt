@@ -1,0 +1,2 @@
+Marko|Markovic|1985-03-15|Bulevar Oslobodjenja|25|Novi Sad|Srbija|0641234567|marko@example.com|123456789|12
+Ana|Petrovic|1990-07-22|Kralja Petra|18|Beograd|Srbija|065987654321|ana@example.com|987654321|8

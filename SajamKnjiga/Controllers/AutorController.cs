@@ -41,8 +41,7 @@ namespace SajamKnjiga.Controllers
                         PrikaziAutore();
                         break;
                     case "2":
-                        //dodati za detaljan prikaz
-                        //TODO
+                        PrikaziAutora();
                         break;
                     case "3":
                         DodajAutora();
@@ -64,29 +63,72 @@ namespace SajamKnjiga.Controllers
                 
             }
         }
-        //TODO 
-        //Mia
         private void PrikaziAutore()
-        {
-            Console.WriteLine("Prikaz autora:");
-
+        { 
             List<Autor> autori = autoriServis.DobaviSveAutore();
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("AUTORI SAJMA");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"Broj LK", -16}{"Ime i prezime", -25}{"Grad", -20}{"Iskustvo",10}");
+            Console.WriteLine(new string('-', 71));
+
+            Console.ForegroundColor = prethodnaBoja;
 
             foreach (Autor autor in autori)
             {
-                Console.WriteLine(autor.Ime);
-                Console.WriteLine(autor.Prezime);
-                Console.WriteLine(autor.DatumRodjenja);
-                Console.WriteLine(autor.Adresa.Ulica);
-                Console.WriteLine(autor.Adresa.Broj);
-                Console.WriteLine(autor.Adresa.Grad);
-                Console.WriteLine(autor.Adresa.Drzava);
-                Console.WriteLine(autor.Telefon);
-                Console.WriteLine(autor.E_mail);
-                Console.WriteLine(autor.LK);
-                Console.WriteLine(autor.GodineIskustva);
-                Console.WriteLine();
+                string punoIme = $"{autor.Ime} {autor.Prezime}";
+                string grad = autor.Adresa?.Grad ?? "-";
+
+                Console.WriteLine(
+                    $"{autor.LK, -16}{punoIme, -25}{grad, -20}{autor.GodineIskustva, 10}");
             }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno autora: { autori.Count}");
+        }
+
+        private void PrikaziAutora()
+        {
+            Console.WriteLine("Unesi broj licne karte autora:");
+            string lk = Console.ReadLine();
+
+            Autor autor = autoriServis.DobaviAutora(lk);
+
+            if(autor == null)
+            {
+                Console.WriteLine("Autor nije pronadjen!");
+                return;
+            }
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor= ConsoleColor.Magenta;
+
+            Console.WriteLine("PODACI O AUTORU");
+            Console.WriteLine(new String('-', 48));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            Console.WriteLine($"{"Broj LK:", -20}{autor.LK}");
+            Console.WriteLine($"{"Ime:", -20}{autor.Ime}");
+            Console.WriteLine($"{"Prezime:", -20}{autor.Prezime}");
+            Console.WriteLine($"{"Datum rodjenja:", -20}{autor.DatumRodjenja:dd.MM.yyyy.}");
+            Console.WriteLine($"{"Ulica:", -20}{autor.Adresa?.Ulica??"-"}");
+            Console.WriteLine($"{"Broj:", -20}{autor.Adresa?.Broj??"-"}");
+            Console.WriteLine($"{"Grad:", -20}{autor.Adresa?.Grad??"-"}");
+            Console.WriteLine($"{"Drzava:", -20}{autor.Adresa?.Drzava??"-"}");
+            Console.WriteLine($"{"Telefon:", -20}{autor.Telefon}");
+            Console.WriteLine($"{"Email:", -20}{ autor.E_mail} ");
+            Console.WriteLine($"{"Godine iskustva:", -20}{autor.GodineIskustva}");
+            Console.WriteLine();
         }
 
         private void DodajAutora()

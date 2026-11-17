@@ -43,7 +43,7 @@ namespace SajamKnjiga.Controllers
                         PrikaziKnjige();
                         break;
                     case "2":
-                        DetaljiOKnjizi();
+                        PrikaziKnjigu();
                         break;
                     case "3":
                         DodavanjeKnjige();
@@ -63,20 +63,65 @@ namespace SajamKnjiga.Controllers
             }
         }
 
-             private void PrikaziKnjige()
+        private void PrikaziKnjige()
         {
-
-            Console.WriteLine("Prikaz knjiga:");
             List<Knjiga> knjige = knjigeServis.DobaviSveKnjige();
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("KNJIGE SAJMA");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"ISBN",-18}{"Naziv",-30}{"Zanr",-20}{"Godina",8}{"Cena",12}");
+
+            Console.WriteLine(new string('-', 88));
+
+            Console.ForegroundColor = prethodnaBoja;
+
             foreach (Knjiga knjiga in knjige)
             {
-                Console.WriteLine(knjiga);
+                Console.WriteLine(
+                    $"{knjiga.ISBN,-18}{knjiga.Naziv,-30}{knjiga.Zanr,-20}{knjiga.GodinaIzdanja,8}{knjiga.Cena,12}");
             }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno knjiga: {knjige.Count}");
         }
 
-        private void DetaljiOKnjizi()
+        private void PrikaziKnjigu()
         {
-            Console.WriteLine("TODO->URADITI");
+            Console.WriteLine("Unesi ISBN knjige:");
+            string isbn = Console.ReadLine();
+
+            Knjiga knjiga = knjigeServis.DobaviKnjigu(isbn);
+
+            if (knjiga == null)
+            {
+                Console.WriteLine("Knjiga nije pronadjena!");
+                return;
+            }
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("PODACI O KNJIZI");
+            Console.WriteLine(new string('-', 48));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            Console.WriteLine($"{"ISBN:",-20}{knjiga.ISBN}");
+            Console.WriteLine($"{"Naziv:", -20}{knjiga.Naziv}");
+            Console.WriteLine($"{"Zanr:", -20}{knjiga.Zanr}");
+            Console.WriteLine($"{"Godina izdanja:", -20}{knjiga.GodinaIzdanja}");
+            Console.WriteLine($"{"Cena:", -20}{knjiga.Cena} RSD");
+            Console.WriteLine($"{"Broj strana:", -20}{knjiga.BrojStrana}");
+            Console.WriteLine();
         }
 
         private void DodavanjeKnjige()
