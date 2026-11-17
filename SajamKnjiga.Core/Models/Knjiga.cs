@@ -23,6 +23,10 @@ namespace SajamKnjiga.Core.Models
 
         public List<Autor> Autori { get; set; } = new List<Autor>();
 
+        public List<string> LkAutora { get; set; } = new List<string>();
+
+        //TODO
+        //Mia
         //public Izdavac Izdavac { get; set; } 
 
         public override string ToString()
@@ -44,15 +48,11 @@ namespace SajamKnjiga.Core.Models
                 GodinaIzdanja.ToString(),
                 Cena.ToString(),
                 BrojStrana.ToString(),
-                //List<Autor> Autori = new List<Autor>
-                 /*dodati nakon kreiranja klase Izdavac*/
+                //TODO
                 //Izdavac
-                string.Join("%", PosetiociKojiSuKupili),
-                string.Join("%", PosetiociListaZelja),
-                // ["123", "456", "45"]
-                // "123%456%45"
-                //public List<Posetilac> PosetiociKojiSuKupili
-                //public List<Posetilac> PosetiociListaZelja
+                //string.Join("%", PosetiociKojiSuKupili),
+                //string.Join("%", PosetiociListaZelja),
+                string.Join("%", LkAutora)
             };
 
             return csvValues;
@@ -67,6 +67,15 @@ namespace SajamKnjiga.Core.Models
             Cena = int.Parse(values[4]);
             BrojStrana = int.Parse(values[5]);
 
+            LkAutora = new List<string>();
+
+            if(values.Length > 6 && !string.IsNullOrEmpty(values[6]))
+            {
+                LkAutora = values[6].Split('%').ToList();
+            }
+
+            //TODO
+            /*
             string posetiociKojiSuKupiliStr = values[6];
 
             if (string.IsNullOrEmpty(posetiociKojiSuKupiliStr))

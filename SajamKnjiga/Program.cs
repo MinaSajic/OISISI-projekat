@@ -1,6 +1,7 @@
 ﻿using SajamKnjiga.Controllers;
 using SajamKnjiga.Core.Models;
 using SajamKnjiga.Core.Services;
+using SajamKnjiga.Core.DAO;
 
 namespace SajamKnjiga
 {
@@ -9,10 +10,12 @@ namespace SajamKnjiga
         static void Main()
         {
 
+            PovezivanjeEntiteta povezivanje = new PovezivanjeEntiteta();
+
             PosetilacService posetiociServis = new PosetilacService();
-            KnjigaService knjigeServis = new KnjigaService();
+            KnjigaService knjigeServis = povezivanje.KnjigeServis;
             KupovinaService kupovineServis = new KupovinaService();
-            AutorService autoriServis = new AutorService();
+            AutorService autoriServis = povezivanje.AutoriServis;
             AdresaService adreseServis = new AdresaService();
             IzdavacService izdavaciServis = new IzdavacService();
 
@@ -20,7 +23,7 @@ namespace SajamKnjiga
 
             KupovinaController kupovinaController = new KupovinaController(kupovineServis, posetiociServis, knjigeServis);
 
-            KnjigaController knjigaController = new KnjigaController(knjigeServis);
+            KnjigaController knjigaController = new KnjigaController(knjigeServis, povezivanje);
 
             AutorController autorController = new AutorController(autoriServis);
 

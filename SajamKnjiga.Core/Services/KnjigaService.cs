@@ -14,7 +14,12 @@ namespace SajamKnjiga.Core.Services
 
         public KnjigaService()
         {
-            this.knjigaDAO = new KnjigaDAO();
+            knjigaDAO = new KnjigaDAO();
+        }
+
+        internal KnjigaService(KnjigaDAO knjigaDAO)
+        {
+            this.knjigaDAO = knjigaDAO;
         }
 
         public Knjiga DobaviKnjigu(string isbn)

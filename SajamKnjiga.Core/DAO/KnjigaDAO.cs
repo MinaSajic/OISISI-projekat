@@ -10,7 +10,7 @@ namespace SajamKnjiga.Core.DAO
 {
     internal class KnjigaDAO
     {
-        private static List<Knjiga> knjige;
+        private List<Knjiga> knjige;
 
         private Storage<Knjiga> storage;
 
@@ -106,8 +106,11 @@ namespace SajamKnjiga.Core.DAO
             storage.Save(knjige);
 
         }
+
+        internal void SacuvajKnjige()
+        {
+            storage.Save(knjige);
+        }
     }
-
-
 }
 

@@ -12,9 +12,14 @@ namespace SajamKnjiga.Core.Services
     {
         private AutorDAO autorDAO;
 
+
         public AutorService()
         {
-            this.autorDAO = new AutorDAO();
+            autorDAO = new AutorDAO();
+        }
+        internal AutorService(AutorDAO autorDAO)
+        {
+            this.autorDAO = autorDAO;
         }
 
         public List<Autor> DobaviSveAutore()
