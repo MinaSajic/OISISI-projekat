@@ -35,6 +35,8 @@ namespace SajamKnjiga.Core.Models
 
         public string Komentar {  get; set; }
 
+        public List<string> KupljeneKnjige { get; set; } = new List<string>();
+
         public override string ToString()
         {
             return $"Broj članske karte: {Posetilac?.BrojClanskeKarte}, " +

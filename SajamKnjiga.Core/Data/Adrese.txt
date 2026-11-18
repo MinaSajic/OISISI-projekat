@@ -2,3 +2,4 @@
 2|Kralja Petra|16|Beograd|Srbija
 3|Zmaj Jovina|12|Novi Sad|Srbija
 4|Kneza Milosa|45|Nis|Srbija
+23|34|2|1|1

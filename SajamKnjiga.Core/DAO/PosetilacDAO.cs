@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SajamKnjiga.Core.DAO
 {
-    internal class PosetilacDAO
+    public class PosetilacDAO
     {
         private List<Posetilac> posetioci;
         private Storage<Posetilac> storage;
@@ -32,6 +32,11 @@ namespace SajamKnjiga.Core.DAO
             storage = new Storage<Posetilac>("Posetioci.txt");
 
             posetioci = storage.Load();
+        }
+
+        public void SacuvajPosetioce()
+        {
+            storage.Save(posetioci);
         }
 
         public Posetilac DobaviPosetioca(string brojClanskeKarte)

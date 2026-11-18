@@ -1,21 +1,27 @@
-﻿using System;
+﻿using SajamKnjiga.Core.DAO;
+using SajamKnjiga.Core.Models;
+using SajamKnjiga.Core.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using SajamKnjiga.Core.Models;
-using SajamKnjiga.Core.Services;
 
 namespace SajamKnjiga.Controllers
 {
     internal class AutorController
     {
         private AutorService autoriServis;
+        private KnjigaService knjigeServis;
 
-        public AutorController(AutorService autoriServis)
+        private PovezivanjeEntiteta povezivanje;
+
+        public AutorController(AutorService autoriServis, KnjigaService knjigeServis,PovezivanjeEntiteta povezivanje)
         {
             this.autoriServis = autoriServis;
+            this.knjigeServis = knjigeServis;
+            this.povezivanje = povezivanje;
         }
 
         public void Meni()
@@ -25,13 +31,16 @@ namespace SajamKnjiga.Controllers
             while (!izlazIzPrograma)
             {
                 Console.WriteLine();
-                Console.WriteLine("Izaberi od ponudjenih:");
                 Console.WriteLine("1 Prikaz autora");
                 Console.WriteLine("2 Prikaz podataka o autoru");
                 Console.WriteLine("3 Dodavanje autora");
                 Console.WriteLine("4 Izmena autora");
                 Console.WriteLine("5 Brisanje autora");
+                Console.WriteLine("6 Dodavanje knjige autoru");
+                Console.WriteLine("7 Uklanjanje knjige sa autora");
                 Console.WriteLine("0 Nazad");
+                Console.WriteLine();
+                Console.Write("Izaberi od ponudjenih: ");
 
                 string odabranaOpcija = Console.ReadLine();
                 
@@ -52,6 +61,12 @@ namespace SajamKnjiga.Controllers
                     case "5":
                         ObrisiAutora();
                         break;
+                    case "6":
+                        DodajKnjiguAutoru();
+                        break;
+                    case "7":
+                        SkloniKnjiguSaAutora();
+                        break;
                     case "0":
                         izlazIzPrograma = true;
                         break;
@@ -64,22 +79,10 @@ namespace SajamKnjiga.Controllers
             }
         }
         private void PrikaziAutore()
-        { 
+        {
+            IspisiZaglavlje("AUTORI SAJMA", 71, $"{"Broj LK",-16}{"Ime i prezime",-25}{"Grad",-20}{"Iskustvo",10}");
+
             List<Autor> autori = autoriServis.DobaviSveAutore();
-
-            Console.WriteLine();
-
-            ConsoleColor prethodnaBoja = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Magenta;
-
-            Console.WriteLine("AUTORI SAJMA");
-            Console.WriteLine();
-
-            Console.WriteLine(
-                $"{"Broj LK", -16}{"Ime i prezime", -25}{"Grad", -20}{"Iskustvo",10}");
-            Console.WriteLine(new string('-', 71));
-
-            Console.ForegroundColor = prethodnaBoja;
 
             foreach (Autor autor in autori)
             {
@@ -96,7 +99,11 @@ namespace SajamKnjiga.Controllers
 
         private void PrikaziAutora()
         {
-            Console.WriteLine("Unesi broj licne karte autora:");
+
+            IspisiListuAutora();
+
+            Console.WriteLine();
+            Console.Write("Unesi broj licne karte autora: ");
             string lk = Console.ReadLine();
 
             Autor autor = autoriServis.DobaviAutora(lk);
@@ -107,15 +114,7 @@ namespace SajamKnjiga.Controllers
                 return;
             }
 
-            Console.WriteLine();
-
-            ConsoleColor prethodnaBoja = Console.ForegroundColor;
-            Console.ForegroundColor= ConsoleColor.Magenta;
-
-            Console.WriteLine("PODACI O AUTORU");
-            Console.WriteLine(new String('-', 48));
-
-            Console.ForegroundColor = prethodnaBoja;
+            IspisiZaglavlje("PODACI O AUTORU", 48);
 
             Console.WriteLine($"{"Broj LK:", -20}{autor.LK}");
             Console.WriteLine($"{"Ime:", -20}{autor.Ime}");
@@ -129,6 +128,21 @@ namespace SajamKnjiga.Controllers
             Console.WriteLine($"{"Email:", -20}{ autor.E_mail} ");
             Console.WriteLine($"{"Godine iskustva:", -20}{autor.GodineIskustva}");
             Console.WriteLine();
+
+            Console.WriteLine("Knjige: ");
+            Console.WriteLine();
+            if (autor.Knjige.Count == 0)
+            {
+                Console.WriteLine("Nema povezanih autora!");
+            }
+            else
+            {
+                for (int i = 0; i < autor.Knjige.Count; i++)
+                {
+                    Knjiga knjiga = autor.Knjige[i];
+                    Console.WriteLine($" {i + 1}. {knjiga.Naziv} - {knjiga.Zanr} (ISBN: {knjiga.ISBN})");
+                }
+            }
         }
 
         private void DodajAutora()
@@ -272,6 +286,44 @@ namespace SajamKnjiga.Controllers
             autoriServis.IzmeniAutora(autor);
         }
 
+
+        private void IspisiListuAutora()
+        {
+            List<Autor> autori = autoriServis.DobaviSveAutore();
+
+            IspisiZaglavlje("AUTORI SAJMA", 30, $"{"Broj LK",-16}{"Ime i prezime",-25}");
+
+            
+
+            foreach (Autor a in autori)
+            {
+                string punoIme = $"{a.Ime} {a.Prezime}";
+                Console.WriteLine($"{a.LK,-16}{punoIme,-25}");
+            }
+
+            Console.WriteLine();
+        }
+
+        private void IspisiZaglavlje(string naslov, int sirina, string kolone = null)
+        {
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine(naslov);
+
+            if (kolone != null)
+            {
+                Console.WriteLine();
+                Console.WriteLine(kolone);
+            }
+
+            Console.WriteLine(new string('-', sirina));
+
+            Console.ForegroundColor = prethodnaBoja;
+        }
+
         private void ObrisiAutora()
         {
             Console.WriteLine("Unesi broj licne karte autora kojeg zelis da obrises:");
@@ -285,6 +337,115 @@ namespace SajamKnjiga.Controllers
 
             autoriServis.ObrisiAutora(lk);
             Console.WriteLine("Autor je uspesno obrisan!");
+        }
+
+        private void DodajKnjiguAutoru()
+        {
+
+            List<Autor> autori = autoriServis.DobaviSveAutore();
+
+            IspisiZaglavlje("AUTORI SAJMA", 30, $"{"Broj LK",-16}{"Ime i prezime",-25}");
+
+            foreach (Autor autor in autori)
+            {
+                string punoIme = $"{autor.Ime} {autor.Prezime}";
+
+                Console.WriteLine(
+                    $"{autor.LK,-16}{punoIme,-25}");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("Unesi lk autora : ");
+            string lk = Console.ReadLine();
+
+            List<Knjiga> knjige = knjigeServis.DobaviSveKnjige();
+
+            IspisiZaglavlje("KNJIGE SAJMA", 55, $"{"ISBN",-18}{"Naziv",-30}{"Zanr",-20}");
+
+            foreach (Knjiga knjiga in knjige)
+            {
+                string autoriKnjige = string.Join(", ",
+                    knjiga.Autori.Select(autor => $"{autor.Ime} {autor.Prezime}"));
+
+                Console.WriteLine(
+                    $"{knjiga.ISBN,-18}{knjiga.Naziv,-30}{knjiga.Zanr,-20}");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("Unesi ISBN knjige : ");
+            string isbn = Console.ReadLine();
+
+
+            bool uspesno = povezivanje.DodajKnjiguAutoru(isbn, lk);
+
+            
+            if (uspesno)
+            {
+                Console.WriteLine("Knjiga je uspesno dodata autoru.");
+            }
+            else
+            {
+                Console.WriteLine("Dodavanje nije uspelo. Proveri ISBN i LK!");
+            }
+        }
+
+        private void SkloniKnjiguSaAutora()
+        {
+
+            // PRIKAZ AUTORA
+
+
+
+            List<Autor> autori = autoriServis.DobaviSveAutore();
+
+            IspisiZaglavlje("AUTORI SAJMA", 30, $"{"Broj LK",-16}{"Ime i prezime",-25}");
+
+            foreach (Autor autor in autori)
+            {
+                string punoIme = $"{autor.Ime} {autor.Prezime}";
+
+                Console.WriteLine(
+                    $"{autor.LK,-16}{punoIme,-25}");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("Unesi broj LK autora: ");
+            string lk = Console.ReadLine();
+
+            // PRIKAZ KNJIGA 
+
+            List<Knjiga> knjige = knjigeServis.DobaviSveKnjige();
+
+            IspisiZaglavlje("KNJIGE SAJMA", 55, $"{"ISBN",-18}{"Naziv",-30}{"Zanr",-20}");
+
+            foreach (Knjiga knjiga in knjige)
+            {
+                string autoriKnjige = string.Join(", ",
+                    knjiga.Autori.Select(autor => $"{autor.Ime} {autor.Prezime}"));
+
+                Console.WriteLine(
+                    $"{knjiga.ISBN,-18}{knjiga.Naziv,-30}{knjiga.Zanr,-20}");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("Unesi ISBN knjige: ");
+            string isbn = Console.ReadLine();
+
+            bool uspesno = povezivanje.UkloniKnjiguSaAutora(isbn, lk);
+
+
+            if (uspesno)
+            {
+                Console.WriteLine("Knjiga je uspesno uklonjena sa autora.");
+            }
+            else
+            {
+                Console.WriteLine("Uklanjanje nije uspelo. Proveri ISBN i LK!");
+            }
         }
     }
 }

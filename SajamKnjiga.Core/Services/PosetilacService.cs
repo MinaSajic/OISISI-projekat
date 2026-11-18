@@ -12,9 +12,9 @@ namespace SajamKnjiga.Core.Services
     {
         private PosetilacDAO posetilacDAO;
 
-        public PosetilacService()
+        public PosetilacService(PosetilacDAO posetioci)
         {
-            this.posetilacDAO = new PosetilacDAO();
+            this.posetilacDAO = posetioci;
         }
 
         public bool PostojiLiPosetilac(string brojClanskeKarte)

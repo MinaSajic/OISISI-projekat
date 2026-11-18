@@ -1,4 +1,5 @@
-﻿using SajamKnjiga.Core.Models;
+﻿using SajamKnjiga.Core.DAO;
+using SajamKnjiga.Core.Models;
 using SajamKnjiga.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,12 @@ namespace SajamKnjiga.Controllers
     {
 
         private  PosetilacService posetiociServis;
+        private PovezivanjeEntiteta povezivanje;
 
-
-        public PosetilacController(PosetilacService posetiociServis)
+        public PosetilacController(PosetilacService posetiociServis,PovezivanjeEntiteta povezivanje)
         {
             this.posetiociServis = posetiociServis;
+            this.povezivanje = povezivanje;
         }
 
 
@@ -35,7 +37,13 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("3 Dodavanje posetilaca");
                 Console.WriteLine("4 Brisanje posetioca");
                 Console.WriteLine("5 Izmena posetioca");
+                Console.WriteLine("6 Knjige na listi zelja");
+                Console.WriteLine("7 Prikaz kupljenih knjiga");
+                Console.WriteLine("8 Prikaz liste zelja");
+                Console.WriteLine("9 Dodavanje knjiga na listu zelja");
                 Console.WriteLine("0. Nazad");
+                Console.WriteLine();
+                Console.Write("Izaberi od ponudjenih: ");
 
                 string odabranaOpcija = Console.ReadLine();
 
@@ -56,6 +64,15 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "5":
                         IzmeniPosetioca();
+                        break;
+                    case "7":
+                        PrikazKupljenihKnjiga();
+                        break;
+                    case "8":
+                        prikazListeZelja();
+                        break;
+                    case "9":
+                        DodajKnjigeNaListuZelja();
                         break;
                     case "0":
                         return;
@@ -317,6 +334,152 @@ namespace SajamKnjiga.Controllers
             }
 
 
+        }
+
+
+        private void PrikazKupljenihKnjiga()
+        {
+            SkraceniPrikaz();
+
+            Console.Write("Unesite broj clanske karte: ");
+
+            
+            string brojKarte = Console.ReadLine();
+
+            Console.WriteLine();
+
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(brojKarte);
+
+            
+            if (posetilac == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+                return;
+            }
+
+            if (posetilac.Kupovine.Count == 0)
+            {
+                Console.WriteLine("Posetilac nema kupljenih knjiga.");
+                return;
+            }
+
+            Console.WriteLine($"Ime: {posetilac.Ime} {posetilac.Prezime}");
+
+            Console.WriteLine();
+
+            Console.WriteLine("Kupljene knjige:");
+
+
+            foreach (Kupovina kupovina in posetilac.Kupovine)
+            {
+                Console.WriteLine($"- {kupovina.Knjiga.Naziv}");
+            }
+        }
+
+
+        private void SkraceniPrikaz()
+        {
+            ConsoleColor prethodna = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("POSETIOCI SAJMA");
+            Console.WriteLine();
+
+            Console.WriteLine($"{"Broj karte",-20}{"Ime",-20}{"Prezime",-20}");
+            Console.WriteLine(new string('-', 60));
+
+            List<Posetilac> sviPosetioci = posetiociServis.DobaviSvePosetioce();
+
+            Console.ForegroundColor = prethodna;
+
+            foreach (Posetilac p in sviPosetioci)
+            {
+                Console.WriteLine($"{p.BrojClanskeKarte,-20}{p.Ime,-20}{p.Prezime,-20}");
+            }
+
+            Console.WriteLine();
+            
+        }
+
+        private void DodajKnjigeNaListuZelja()
+        {
+            SkraceniPrikaz();
+
+            Console.Write("Unesite broj clanske karte: ");
+
+
+            string brojKarte = Console.ReadLine();
+
+            Console.WriteLine();
+            ConsoleColor prethodna = Console.ForegroundColor;
+            Console.ForegroundColor= ConsoleColor.Magenta;
+            Console.WriteLine("KNJIGE SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"ISBN",-18}Naziv");
+
+            Console.WriteLine(new string('-', 25));
+            Console.ForegroundColor = prethodna;
+
+           
+            foreach (Knjiga knjiga in povezivanje.KnjigeServis.DobaviSveKnjige())
+            {
+                Console.WriteLine($"{knjiga.ISBN,-18}{knjiga.Naziv}");
+            }
+
+            Console.WriteLine();
+
+            Console.Write("Unesite ISBN-ove knjiga koje zelite dodati na svoju listu zelja: ");
+
+            
+
+            string isbn = Console.ReadLine();
+
+            if (povezivanje.DodajKnjiguNaListuZelja(brojKarte, isbn))
+            {
+                Console.WriteLine("Dodato je na listu zelja.");
+            }
+            else
+            {
+                Console.WriteLine("Proveri broj karte i ISBN. Knjiga je mozda vec na listi.");
+            }
+        }
+
+
+        private void prikazListeZelja()
+        {
+            SkraceniPrikaz();
+
+            Console.Write("Unesite broj clanske karte: ");
+
+         
+
+            string brojKarte = Console.ReadLine()?.Trim() ?? "";
+
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(brojKarte);
+
+            if (posetilac == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen.");
+                return;
+            }
+
+            if (posetilac.ListaZelja.Count == 0)
+            {
+                Console.WriteLine("Lista zelja je prazna.");
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"{posetilac.Ime} {posetilac.Prezime}");
+          
+          
+
+            foreach (Knjiga knjiga in posetilac.ListaZelja)
+            {
+                Console.WriteLine($" -{knjiga.Naziv}");
+            }
         }
 
     }

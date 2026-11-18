@@ -25,9 +25,11 @@ namespace SajamKnjiga.Core.Models
 
         public List<string> IsbnKnjigaNaListiZelja { get; set; } = new List<string>();
 
-        public List<string> ListaZelja { get; set; } = new List<string>();
+        public List<Knjiga> ListaZelja { get; set; } = new List<Knjiga>();
 
         public List<string> KupovinePosetioca { get; set; } = new List<string>();
+
+        public List<Kupovina> Kupovine { get; set; } = new List<Kupovina>();
 
         public override string ToString()
         {

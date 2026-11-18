@@ -1,11 +1,12 @@
-﻿using SajamKnjiga.Core.Models;
+﻿using SajamKnjiga.Core.DAO;
+using SajamKnjiga.Core.Models;
 using SajamKnjiga.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SajamKnjiga.Core.DAO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SajamKnjiga.Controllers
 {
@@ -29,7 +30,6 @@ namespace SajamKnjiga.Controllers
             while (!izlazIzProgama)
             {
                 Console.WriteLine();
-                Console.WriteLine("Izaberi od ponudjenih");
                 Console.WriteLine("1 Prikaz knjiga");
                 Console.WriteLine("2 Prikaz podataka o odredjenoj knjizi");
                 Console.WriteLine("3 Dodavanje knjige");
@@ -38,7 +38,8 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("6 Dodavanje autora na knjigu");
                 Console.WriteLine("7 Brisanje autora sa knjige");
                 Console.WriteLine("0 Nazad");
-
+                Console.WriteLine();
+                Console.Write("Izaberi od ponudjenih: ");
                 string odabranaOpcija = Console.ReadLine();
 
 
@@ -108,6 +109,9 @@ namespace SajamKnjiga.Controllers
 
         private void PrikaziKnjigu()
         {
+
+            PrikazKnjiga();
+
             Console.WriteLine("Unesi ISBN knjige:");
             string isbn = Console.ReadLine();
 
@@ -154,22 +158,22 @@ namespace SajamKnjiga.Controllers
         {
             Knjiga knjiga = new Knjiga();
 
-            Console.WriteLine("Unesi ISBN knjige: ");
+            Console.Write("Unesi ISBN knjige: ");
             knjiga.ISBN = Console.ReadLine();
 
-            Console.WriteLine("Unesi naziv knjige: ");
+            Console.Write("Unesi naziv knjige: ");
             knjiga.Naziv = Console.ReadLine();
 
-            Console.WriteLine("Unesi zanr knjige: ");
+            Console.Write("Unesi zanr knjige: ");
             knjiga.Zanr = Console.ReadLine();
 
-            Console.WriteLine("Unesi godinu izdanja knjige: ");
+            Console.Write("Unesi godinu izdanja knjige: ");
             knjiga.GodinaIzdanja = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Unesi cenu knjige: ");
+            Console.Write("Unesi cenu knjige: ");
             knjiga.Cena = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Unesi broj strana knjige: ");
+            Console.Write("Unesi broj strana knjige: ");
             knjiga.BrojStrana = int.Parse(Console.ReadLine());
 
             knjigeServis.DodavanjeKnjige(knjiga);
@@ -183,7 +187,10 @@ namespace SajamKnjiga.Controllers
 
         private void IzmeniKnjigu()
         {
-            Console.WriteLine("Unesi ISBN knjige: ");
+
+            PrikazKnjiga();
+
+            Console.Write("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
 
             if (!knjigeServis.PostojiLiKnjiga(isbn))
@@ -200,6 +207,8 @@ namespace SajamKnjiga.Controllers
             Console.WriteLine("3 Godinu izdanja");
             Console.WriteLine("4 Cenu");
             Console.WriteLine("5 Broj strana");
+
+            Console.Write("Izaberi opciju: ");
 
             string odabranaOpcija = Console.ReadLine();
 
@@ -239,7 +248,8 @@ namespace SajamKnjiga.Controllers
 
         private void ObrisiKnjigu()
         {
-            Console.WriteLine("Unesi ISBN knjige koju zelis da obrises:");
+            PrikazKnjiga();
+            Console.Write("Unesi ISBN knjige koju zelis da obrises: ");
             string isbn = Console.ReadLine();
 
             if (knjigeServis.IzbrisiKnjigu(isbn))
@@ -254,10 +264,14 @@ namespace SajamKnjiga.Controllers
 
         private void DodajAutoraNaKnjigu()
         {
-            Console.WriteLine("Unesi ISBN knjige:");
+            PrikazKnjiga();
+
+            Console.Write("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
 
-            Console.WriteLine("Unesi broj LK autora:");
+            PrikazAutora();
+
+            Console.Write("Unesi broj LK autora: ");
             string lk = Console.ReadLine();
 
             bool uspesno = povezivanje.DodajAutoraNaKnjigu(isbn, lk);
@@ -274,10 +288,13 @@ namespace SajamKnjiga.Controllers
 
         private void UkloniAutoraSaKnjige()
         {
-            Console.WriteLine("Unesi ISBN knjige:");
+            PrikazKnjiga();
+            Console.Write("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
 
-            Console.WriteLine("Unesi broj LK autora:");
+            PrikazAutora();
+
+            Console.Write("Unesi broj LK autora: ");
             string lk = Console.ReadLine();
 
             bool uspesno = povezivanje.UkloniAutoraSaKnjige(isbn, lk);
@@ -290,6 +307,53 @@ namespace SajamKnjiga.Controllers
             {
                 Console.WriteLine("Uklanjanje nije uspelo. Proveri ISBN i LK!");
             }
+        }
+
+        private void PrikazKnjiga()
+        {
+
+            Console.WriteLine();
+            ConsoleColor prethodna = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("KNJIGE SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"ISBN",-18}Naziv");
+
+            Console.WriteLine(new string('-', 25));
+            Console.ForegroundColor = prethodna;
+
+
+            foreach (Knjiga knjiga in povezivanje.KnjigeServis.DobaviSveKnjige())
+            {
+                Console.WriteLine($"{knjiga.ISBN,-18}{knjiga.Naziv}");
+            }
+
+            Console.WriteLine();
+        }
+
+        private void PrikazAutora()
+        {
+            List<Autor> autori = povezivanje.AutoriServis.DobaviSveAutore();
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("AUTORI SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"Broj LK",-16}{"Ime i prezime",-25}");
+            Console.WriteLine(new string('-', 41));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach (Autor autor in autori)
+            {
+                string punoIme = $"{autor.Ime} {autor.Prezime}";
+                Console.WriteLine($"{autor.LK,-16}{punoIme,-25}");
+            }
+
+            Console.WriteLine();
         }
     }
 }

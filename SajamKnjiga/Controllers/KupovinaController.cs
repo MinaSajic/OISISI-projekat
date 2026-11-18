@@ -38,6 +38,7 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("2 Dodavanje kupovine");
                 Console.WriteLine("3 Izmena kupovine");
                 Console.WriteLine("4 Brisanje kupovine");
+                Console.WriteLine("5 Prikaz kupljenih knjiga");
                 Console.WriteLine("0 Nazad");
 
                 string odabranaOpcija = Console.ReadLine();

@@ -12,20 +12,20 @@ namespace SajamKnjiga
 
             PovezivanjeEntiteta povezivanje = new PovezivanjeEntiteta();
 
-            PosetilacService posetiociServis = new PosetilacService();
+            PosetilacService posetioci​Servis = povezivanje.PosetiociServis;
             KnjigaService knjigeServis = povezivanje.KnjigeServis;
             KupovinaService kupovineServis = new KupovinaService();
             AutorService autoriServis = povezivanje.AutoriServis;
             AdresaService adreseServis = new AdresaService();
             IzdavacService izdavaciServis = new IzdavacService();
 
-            PosetilacController posetilacController = new PosetilacController(posetiociServis);
+            PosetilacController posetilacController = new PosetilacController(posetioci​Servis, povezivanje);
 
             KupovinaController kupovinaController = new KupovinaController(kupovineServis, posetiociServis, knjigeServis);
 
             KnjigaController knjigaController = new KnjigaController(knjigeServis, povezivanje);
 
-            AutorController autorController = new AutorController(autoriServis);
+            AutorController autorController = new AutorController(autoriServis,knjigeServis, povezivanje);
 
             AdresaController adresaController = new AdresaController(adreseServis);
 
@@ -35,7 +35,7 @@ namespace SajamKnjiga
 
             while (!izlaziIzProgram)
             {
-                Console.WriteLine("Izaberi opciju");
+               
                 Console.WriteLine("1 Posetioci");
                 Console.WriteLine("2 Kupovine");
                 Console.WriteLine("3 Knjige");
@@ -43,6 +43,8 @@ namespace SajamKnjiga
                 Console.WriteLine("5 Adresa");
                 Console.WriteLine("6 Izdavac");
                 Console.WriteLine("0 Izlazak iz programa");
+                Console.WriteLine();
+                Console.Write("Izaberi opciju: ");
 
                 string odabranaOpcija = Console.ReadLine();
                 switch (odabranaOpcija)
