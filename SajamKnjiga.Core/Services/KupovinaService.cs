@@ -17,6 +17,11 @@ namespace SajamKnjiga.Core.Services
             this.kupovinaDAO = new KupovinaDAO();
         }
 
+        internal KupovinaService(KupovinaDAO kupovine)
+        {
+            this.kupovinaDAO = kupovine;
+        }
+
         public bool PostojiLiKupovina(string brojClanskeKarte, string isbn)
         {
             return kupovinaDAO.PostojiLiKupovina(brojClanskeKarte, isbn);
@@ -65,5 +70,7 @@ namespace SajamKnjiga.Core.Services
             kupovinaDAO.BrisanjeKupovine(brojClanskeKarte, isbn);
             return true;
         }
+
+       
     }
 }

@@ -12,30 +12,37 @@ namespace SajamKnjiga.Core.Models
         public int Sifra {  get; set; }
 
         public string Naziv {  get; set; }
-        
+
+        public string LkSefa { get; set; } = "";
+
         public Autor SefIzdavaca { get; set; }
 
         public List<Autor> SpisakAutora = new List<Autor>();
 
         public List<Knjiga> SpisakKnjiga = new List<Knjiga>();
 
-        public string[] ToCSV()
+
+        public bool PostaviSefa(Autor autor)
         {
-
-            string lkSefa = "";
-
-            if( SefIzdavaca != null)
+            if (autor == null || autor.GodineIskustva < 5)
             {
-                lkSefa = SefIzdavaca.LK;
+                return false;
             }
 
+            SefIzdavaca = autor;
+            LkSefa = autor.LK;
+            return true;
+        }
+
+
+        public string[] ToCSV()
+        {
             string[] csvValues =
             {
-                Sifra.ToString(),
-                Naziv,
-                lkSefa,
-
-            };
+            Sifra.ToString(),
+            Naziv,
+            SefIzdavaca != null ? SefIzdavaca.LK : LkSefa
+        };
 
             return csvValues;
         }
@@ -44,7 +51,7 @@ namespace SajamKnjiga.Core.Models
         {
             Sifra = int.Parse(values[0]);
             Naziv = values[1];
-            //string lkSefa = values[2];
+            LkSefa = values.Length > 2 ? values[2] : "";
         }
 
     }

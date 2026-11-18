@@ -14,14 +14,14 @@ namespace SajamKnjiga
 
             PosetilacService posetioci​Servis = povezivanje.PosetiociServis;
             KnjigaService knjigeServis = povezivanje.KnjigeServis;
-            KupovinaService kupovineServis = new KupovinaService();
+            KupovinaService kupovineServis = povezivanje.KupovineServis;
             AutorService autoriServis = povezivanje.AutoriServis;
             AdresaService adreseServis = new AdresaService();
             IzdavacService izdavaciServis = new IzdavacService();
 
             PosetilacController posetilacController = new PosetilacController(posetioci​Servis, povezivanje);
 
-            KupovinaController kupovinaController = new KupovinaController(kupovineServis, posetiociServis, knjigeServis);
+            KupovinaController kupovinaController = new KupovinaController(povezivanje);
 
             KnjigaController knjigaController = new KnjigaController(knjigeServis, povezivanje);
 

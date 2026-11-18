@@ -21,6 +21,8 @@ namespace SajamKnjiga.Core.DAO
         public AutorService AutoriServis { get; }
         public KnjigaService KnjigeServis { get; }
 
+        public KupovinaService KupovineServis { get; }
+
         public PosetilacService PosetiociServis { get; }
 
         public PovezivanjeEntiteta()
@@ -34,7 +36,8 @@ namespace SajamKnjiga.Core.DAO
             poveziAutoreIKnjige();
 
             posetioci = new PosetilacDAO();
-            kupovine = new KupovinaDAO(); 
+            kupovine = new KupovinaDAO();
+            KupovineServis = new KupovinaService(kupovine);
             PosetiociServis = new PosetilacService(posetioci);
 
             poveziPosetioceIKnjige();
@@ -124,7 +127,7 @@ namespace SajamKnjiga.Core.DAO
         }
 
 
-        private void poveziPosetioceIKnjige()
+        public void poveziPosetioceIKnjige()
         {
             foreach (Posetilac posetilac in posetioci.DobaviSvePosetioce())
             {

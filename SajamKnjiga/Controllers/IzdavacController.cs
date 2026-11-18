@@ -23,15 +23,17 @@ namespace SajamKnjiga.Controllers
 
             while(!izlazIzPrograma)
             {
-                Console.WriteLine();
-                Console.WriteLine("Izaberi od ponudjenih:");
+               
+               
                 Console.WriteLine("1 Prikaz izdavaca");
                 Console.WriteLine("2 Prikaz podataka o izdavacu");
                 Console.WriteLine("3 Dodavanje izdavaca");
                 Console.WriteLine("4 Izmena izdavaca");
                 Console.WriteLine("5 Brisanje izdavaca");
+                Console.WriteLine("6 Postavi sefa izdavaca");
                 Console.WriteLine("0 Nazad");
-
+                Console.WriteLine();
+                Console.Write("Izaberi od ponudjenih:");
                 string odabranaOpcija = Console.ReadLine();
 
                 switch(odabranaOpcija)
@@ -50,6 +52,9 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "5":
                         ObrisiIzdavaca();
+                        break;
+                    case "6":
+                        PostaviSefaIzdavaca();
                         break;
                     case "0":
                         izlazIzPrograma = true;
@@ -92,7 +97,7 @@ namespace SajamKnjiga.Controllers
 
         private void PrikaziIzdavaca()
         {
-            Console.WriteLine("Unesi sifru izdavaca:");
+            Console.Write("Unesi sifru izdavaca: ");
 
             if (!int.TryParse(Console.ReadLine(), out int sifra))
             {
@@ -127,7 +132,7 @@ namespace SajamKnjiga.Controllers
 
             Izdavac izdavac = new Izdavac();
 
-            Console.WriteLine("Unesi sifru izdavaca:");
+            Console.Write("Unesi sifru izdavaca: ");
 
             if(!int.TryParse(Console.ReadLine(), out int sifra))
             {
@@ -136,7 +141,7 @@ namespace SajamKnjiga.Controllers
             }
             izdavac.Sifra = sifra;
 
-            Console.WriteLine("Unesi naziv izdavaca:");
+            Console.Write("Unesi naziv izdavaca: ");
             izdavac.Naziv = Console.ReadLine();
 
             if(izdavacServis.PostojiLiIzdavac(izdavac.Sifra))
@@ -148,11 +153,13 @@ namespace SajamKnjiga.Controllers
                 izdavacServis.DodajIzdavaca(izdavac);
                 Console.WriteLine("Izdavac je uspesno dodat!");
             }
+
+           
         }
 
         private void IzmeniIzdavaca()
         {
-            Console.WriteLine("Unesi sifru izdavaca kojeg zelis da izmenis:");
+            Console.Write("Unesi sifru izdavaca kojeg zelis da izmenis: ");
 
             if (!int.TryParse(Console.ReadLine(), out int sifra))
             {
@@ -168,16 +175,17 @@ namespace SajamKnjiga.Controllers
                 return;
             }
 
-            Console.WriteLine("Izaberite koje polje zelite da izmenite:");
+           
             Console.WriteLine("1 Izmena naziva izdavaca");
             Console.WriteLine("0 Nazad");
+            Console.Write("Izaberite koje polje zelite da izmenite: ");
 
             string izmena = Console.ReadLine();
 
             switch(izmena)
             {
                 case "1":
-                    Console.WriteLine("Unesite novi naziv izdavaca:");
+                    Console.Write("Unesite novi naziv izdavaca: ");
                     izdavac.Naziv = Console.ReadLine();
                     Console.WriteLine("Izdavac je uspesno izmenjen!");
                     break;
@@ -193,7 +201,7 @@ namespace SajamKnjiga.Controllers
 
         private void ObrisiIzdavaca()
         {
-            Console.WriteLine("Unesi sifru izdavaca kojeg zelis da obrises:");
+            Console.Write("Unesi sifru izdavaca kojeg zelis da obrises: ");
 
             if (!int.TryParse(Console.ReadLine(), out int sifra))
             {
@@ -210,6 +218,59 @@ namespace SajamKnjiga.Controllers
             izdavacServis.ObrisiIzdavaca(sifra);
             Console.WriteLine("Izdavac je uspesno obrisan");
 
+        }
+
+        private void PostaviSefaIzdavaca()
+        {
+            PrikaziIzdavace();
+
+            Console.Write("Unesi sifru izdavaca: ");
+            if (!int.TryParse(Console.ReadLine(), out int sifra))
+            {
+                Console.WriteLine("Sifra mora biti broj!");
+                return;
+            }
+
+            Izdavac izdavac = izdavacServis.DobaviIzdavaca(sifra);
+            if (izdavac == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen!");
+                return;
+            }
+
+            if (izdavac.SpisakAutora.Count == 0)
+            {
+                Console.WriteLine("Ovaj izdavac nema autora cije su knjige izdate kod njega.");
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"{"LK",-15}{"Ime",-20}{"Prezime",-20}{"Iskustvo",-10}");
+            Console.WriteLine(new string('-', 65));
+
+            foreach (Autor a in izdavac.SpisakAutora)
+            {
+                Console.WriteLine($"{a.LK,-15}{a.Ime,-20}{a.Prezime,-20}{a.GodineIskustva,-10}");
+            }
+
+            Console.Write("Unesi LK autora kojeg zelis da postavis za sefa: ");
+            string lk = Console.ReadLine()?.Trim() ?? "";
+
+            Autor izabrani = izdavac.SpisakAutora.FirstOrDefault(a => a.LK == lk);
+            if (izabrani == null)
+            {
+                Console.WriteLine("Autor nije medju autorima ovog izdavaca.");
+                return;
+            }
+
+            if (!izdavac.PostaviSefa(izabrani))
+            {
+                Console.WriteLine("Greska: sef izdavaca mora imati najmanje 5 godina iskustva!");
+                return;
+            }
+
+            izdavacServis.IzmeniIzdavaca(izdavac);
+            Console.WriteLine("Sef izdavaca je uspesno postavljen!");
         }
 
     }
