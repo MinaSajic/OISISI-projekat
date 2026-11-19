@@ -111,5 +111,8 @@ namespace SajamKnjiga.Core.DAO
 
             storage.Save(posetioci);
         }
+
+
+
     }
 }

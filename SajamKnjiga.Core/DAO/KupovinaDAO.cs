@@ -99,5 +99,8 @@ namespace SajamKnjiga.Core.DAO
             kupovine.RemoveAt(pozicija);
             storage.Save(kupovine);
         }
+
+
+       
     }
 }

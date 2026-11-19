@@ -41,6 +41,7 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("2 Dodavanje kupovine");
                 Console.WriteLine("3 Izmena kupovine");
                 Console.WriteLine("4 Brisanje kupovine");
+                Console.WriteLine("5 Ponisti kupovinu");
                 Console.WriteLine("0 Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih: ");
@@ -301,6 +302,7 @@ namespace SajamKnjiga.Controllers
 
         }
 
+       
 
         private void PrikazKnjiga()
         {

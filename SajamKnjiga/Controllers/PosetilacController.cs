@@ -42,6 +42,7 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("8 Dodavanje knjiga na listu zelja");
                 Console.WriteLine("9 Uklanjanje knjiga sa liste zelja");
                 Console.WriteLine("10 Prikaz autora sa liste zelja posetioca");
+                Console.WriteLine("11 Sortiranje posetilaca");
                 Console.WriteLine("0. Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih: ");
@@ -80,6 +81,9 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "10":
                         PrikazAutoraPosetioca();
+                        break;
+                    case "11":
+                        SortiranjePosetilaca();
                         break;
                     case "0":
                         return;
@@ -596,6 +600,109 @@ namespace SajamKnjiga.Controllers
 
             Console.WriteLine();
             Console.WriteLine($"Ukupno autora: {autori.Count}");
+        }
+
+        private void SortiranjePosetilaca()
+        {
+            List<Posetilac> posetioci = posetiociServis.DobaviSvePosetioce();
+
+            Console.WriteLine("Sortiranje posetilaca po: ");
+            Console.WriteLine("1 Ime");
+            Console.WriteLine("2 Prezime");
+            Console.WriteLine("3 Datumu rodjenja");
+            Console.WriteLine("4 Kontakt telefonu");
+            Console.WriteLine("5 Email-u");
+            Console.WriteLine("6 Broju clanske karte");
+            Console.WriteLine("7 Trenutnoj godini clanstva");
+            Console.WriteLine("8 Prosecnoj oceni recenzija");
+            Console.Write("Izaberi opciju: ");
+
+            string opcija = Console.ReadLine();
+
+            Console.WriteLine("1 Rastuce");
+            Console.WriteLine("2 Opadajuce");
+            Console.Write("Izaberi redosled: ");
+
+            string redosled = Console.ReadLine();
+
+            if(redosled != "1" && redosled != "2")
+            {
+                Console.WriteLine("Pogresan redosled");
+                return;
+            }
+
+            switch (opcija)
+            {
+                case "1":
+                     posetioci = posetioci.OrderBy(p => p.Ime).ToList();
+                    break;
+                case "2":
+                    posetioci = posetioci.OrderBy(p => p.Prezime).ToList();
+                    break;
+                case "3":
+                    posetioci = posetioci.OrderBy(p => p.DatumRodjenja).ToList();
+                    break;
+                case "4":
+                    posetioci = posetioci.OrderBy(p => p.KontaktTelefon).ToList();
+                    break;
+                case "5":
+                    posetioci = posetioci.OrderBy(p => p.Email).ToList();
+                    break;
+                case "6":
+                    posetioci = posetioci.OrderBy(p => p.BrojClanskeKarte).ToList();
+                    break;
+                case "7":
+                    posetioci = posetioci.OrderBy(p => p.TrenutnaGodinaClanstva).ToList();
+                    break;
+                case "8":
+                    posetioci = posetioci.OrderBy(p => p.ProsecnaOcenaRecenzija).ToList();
+                    break;
+                default:
+                    Console.WriteLine("Pogresna opcija!");
+                    return;
+            }
+
+            if(redosled == "2")
+            {
+                posetioci.Reverse();
+            }
+
+            ConsoleColor prethodna = Console.ForegroundColor;
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("SORTIRANI POSETIOCI — OSNOVNI PODACI");
+            Console.WriteLine(
+                $"{"Članska karta",-18}{"Ime",-18}{"Prezime",-20}{"Datum rođenja",-16}Adresa");
+            Console.WriteLine(new string('─', 95));
+            Console.ForegroundColor = prethodna;
+
+            foreach (Posetilac p in posetioci)
+            {
+                string adresa = p.Adresa == null
+                    ? "—"
+                    : $"{p.Adresa.Ulica} {p.Adresa.Broj}, {p.Adresa.Grad}, {p.Adresa.Drzava}";
+
+                Console.WriteLine(
+                    $"{p.BrojClanskeKarte,-18}{p.Ime,-18}{p.Prezime,-20}" +
+                    $"{p.DatumRodjenja,-16:dd.MM.yyyy}{adresa}");
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("SORTIRANI POSETIOCI — KONTAKT I ČLANSTVO");
+            Console.WriteLine(
+                $"{"Članska karta",-18}{"Telefon",-20}{"Email",-32}" +
+                $"{"God. članstva",-16}{"Pros. ocena",12}");
+            Console.WriteLine(new string('─', 98));
+            Console.ForegroundColor = prethodna;
+
+            foreach (Posetilac p in posetioci)
+            {
+                Console.WriteLine(
+                    $"{p.BrojClanskeKarte,-18}{p.KontaktTelefon,-20}{p.Email,-32}" +
+                    $"{p.TrenutnaGodinaClanstva,-16}{p.ProsecnaOcenaRecenzija,12:F2}");
+            }
         }
 
     }
