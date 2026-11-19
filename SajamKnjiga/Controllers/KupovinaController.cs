@@ -127,20 +127,32 @@ namespace SajamKnjiga.Controllers
             Knjiga knjiga = knjigeServis.DobaviKnjigu(Console.ReadLine());
 
             if (knjiga == null)
-
             {
                 Console.WriteLine("Knjiga ne postoji");
+                return;
+            }
+
+            if(kupovineServis.PostojiLiKupovina(posetilac.BrojClanskeKarte, knjiga.ISBN))
+            {
+                Console.WriteLine("Kupovina vec postoji!");
                 return;
             }
 
             kupovina.Posetilac = posetilac;
             kupovina.Knjiga = knjiga;
 
-            Console.Write("Unesi datum: ");
+            Console.Write("Unesi datum kupovine (dd.MM.yyyy.): ");
             kupovina.DatumKupovine = DateOnly.Parse(Console.ReadLine());
 
-            Console.Write("Unesi ocenu: ");
-            kupovina.Ocena = int.Parse(Console.ReadLine());
+            Console.Write("Unesi ocenu (1-5): ");
+            string unosOcene = Console.ReadLine();
+
+            if(!int.TryParse(unosOcene, out int ocena) || ocena < 1 || ocena > 5)
+            {
+                Console.WriteLine("Ocena mora biti broj od 1 do 5");
+                return;
+            } 
+            kupovina.Ocena = ocena;
 
             Console.Write("Unesi komentar: ");
             kupovina.Komentar = Console.ReadLine();

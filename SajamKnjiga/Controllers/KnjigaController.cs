@@ -37,6 +37,8 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("5 Brisanje knjige");
                 Console.WriteLine("6 Dodavanje autora na knjigu");
                 Console.WriteLine("7 Brisanje autora sa knjige");
+                Console.WriteLine("8 Dodeljivanje izdavaca knjizi");
+                Console.WriteLine("9 Sortiranje knjiga");
                 Console.WriteLine("0 Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih: ");
@@ -65,6 +67,12 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "7":
                         UkloniAutoraSaKnjige();
+                        break;
+                    case "8":
+                        DodeliIzdavacaKnjizi();
+                        break;
+                    case "9":
+                        SortiranjeKnjiga();
                         break;
                     case "0":
                         return;
@@ -161,6 +169,12 @@ namespace SajamKnjiga.Controllers
             Console.Write("Unesi ISBN knjige: ");
             knjiga.ISBN = Console.ReadLine();
 
+            if(knjigeServis.PostojiLiKnjiga(knjiga.ISBN))
+            {
+                Console.WriteLine("Knjiga sa ovim ISBN-om vec postoji!");
+                return;
+            }
+
             Console.Write("Unesi naziv knjige: ");
             knjiga.Naziv = Console.ReadLine();
 
@@ -176,13 +190,38 @@ namespace SajamKnjiga.Controllers
             Console.Write("Unesi broj strana knjige: ");
             knjiga.BrojStrana = int.Parse(Console.ReadLine());
 
-            knjigeServis.DodavanjeKnjige(knjiga);
+            Console.WriteLine();
+            Console.WriteLine("IZDAVACI SAJMA");
 
-            // Mina
-            // TODO 
-            // Autori,PosetiociKojiSuKupili,PosetiociListaZelja -> ovo trebam kasnije implementirati za dodavanje_knjige
+            foreach(Izdavac izdavac in povezivanje.IzdavaciServis.DobaviSveIzdavace())
+            {
+                Console.WriteLine($"{izdavac.Sifra} - {izdavac.Naziv}");
+            }
 
+            Console.WriteLine("Unesi sifru izdavaca: ");
 
+            if(!int.TryParse(Console.ReadLine(), out int sifra))
+            {
+                Console.WriteLine("Sifra mora biti broj!");
+                return;
+            }
+
+            Izdavac izabraniIzdavac = povezivanje.IzdavaciServis.DobaviIzdavaca(sifra);
+
+            if(izabraniIzdavac == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen!");
+                return;
+            }
+
+            knjiga.SifraIzdavaca = izabraniIzdavac.Sifra;
+            knjiga.Izdavac = izabraniIzdavac;
+
+            if(knjigeServis.DodavanjeKnjige(knjiga))
+            {
+                izabraniIzdavac.SpisakKnjiga.Add(knjiga);
+                Console.WriteLine("Knjiga je uspesno dodata!");
+            }
         }
 
         private void IzmeniKnjigu()
@@ -264,7 +303,7 @@ namespace SajamKnjiga.Controllers
 
         private void DodajAutoraNaKnjigu()
         {
-            PrikazKnjiga();
+            SkraceniPrikaz();
 
             Console.Write("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
@@ -288,7 +327,8 @@ namespace SajamKnjiga.Controllers
 
         private void UkloniAutoraSaKnjige()
         {
-            PrikazKnjiga();
+            SkraceniPrikaz();
+
             Console.Write("Unesi ISBN knjige: ");
             string isbn = Console.ReadLine();
 
@@ -354,6 +394,168 @@ namespace SajamKnjiga.Controllers
             }
 
             Console.WriteLine();
+        }
+
+        private void SkraceniPrikaz()
+        {
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("KNJIGE SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"ISBN", -18}Naziv");
+            Console.WriteLine(new string('-', 48));
+
+            Console.WriteLine();
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach(Knjiga knjiga in knjigeServis.DobaviSveKnjige())
+            {
+                Console.WriteLine($"{knjiga.ISBN, -18}{knjiga.Naziv}");
+            }
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("AUTORI SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"LK", -18}Ime i prezime");
+            Console.WriteLine(new string('-', 48));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach(Autor autor in povezivanje.AutoriServis.DobaviSveAutore())
+            {
+                Console.WriteLine($"{autor.LK, -18}{autor.Ime} {autor.Prezime}");
+            }
+
+            Console.WriteLine();
+
+        }
+
+        private void DodeliIzdavacaKnjizi()
+        {
+            PrikazKnjiga();
+
+            Console.WriteLine("Unesi ISBN knjige: ");
+            string isbn = Console.ReadLine();
+
+            Knjiga knjiga = knjigeServis.DobaviKnjigu(isbn);
+
+            if(knjiga == null)
+            {
+                Console.WriteLine("Knjiga nije pronadjena!");
+                return;
+            }
+
+            Console.WriteLine();
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine("IZDAVACI SAJMA");
+            Console.WriteLine();
+            Console.WriteLine($"{"Sifra",-12}Naziv izdavaca");
+            Console.WriteLine(new string('-', 47));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach (Izdavac izdavac in povezivanje.IzdavaciServis.DobaviSveIzdavace())
+            {
+                Console.WriteLine($"{izdavac.Sifra,-12}{izdavac.Naziv}");
+            }
+
+            Console.WriteLine();
+            Console.Write("Unesi sifru izdavaca: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int sifra))
+            {
+                Console.WriteLine("Sifra mora biti broj!");
+                return;
+            }
+
+            if (povezivanje.DodeliIzdavacaKnjizi(isbn, sifra))
+            {
+                Console.WriteLine("Izdavac je uspesno dodeljen knjizi!");
+            }
+            else
+            {
+                Console.WriteLine("Dodeljivanje nije uspelo. Proveri ISBN i sifru izdavaca ili je izdavac vec dodeljen.");
+            }
+        }
+        private void SortiranjeKnjiga()
+        {
+            List<Knjiga> knjige = knjigeServis.DobaviSveKnjige();
+
+            Console.WriteLine("Sortiranje knjiga po:");
+            Console.WriteLine("1 ISBN");
+            Console.WriteLine("2 Nazivu");
+            Console.WriteLine("3 Ceni");
+            Console.WriteLine("4 Godini izdanja");
+            Console.WriteLine("5 Zanru");
+            Console.Write("Izaberi opciju: ");
+
+            string opcija = Console.ReadLine();
+
+            Console.WriteLine("1 Rastuce");
+            Console.WriteLine("2 Opadajuce");
+            Console.Write("Izaberi redosled: ");
+
+            string redosled = Console.ReadLine();
+
+            if (redosled != "1" && redosled != "2")
+            {
+                Console.WriteLine("Pogresan redosled!");
+                return;
+            }
+
+            switch (opcija)
+            {
+                case "1":
+                    knjige = knjige.OrderBy(k => k.ISBN).ToList();
+                    break;
+                case "2":
+                    knjige = knjige.OrderBy(k => k.Naziv).ToList();
+                    break;
+                case "3":
+                    knjige = knjige.OrderBy(k => k.Cena).ToList();
+                    break;
+                case "4":
+                    knjige = knjige.OrderBy(k => k.GodinaIzdanja).ToList();
+                    break;
+                case "5":
+                    knjige = knjige.OrderBy(k => k.Zanr).ToList();
+                    break;
+                default:
+                    Console.WriteLine("Pogresna opcija!");
+                    return;
+            }
+
+            if (redosled == "2")
+            {
+                knjige.Reverse();
+            }
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("SORTIRANE KNJIGE");
+            Console.WriteLine();
+            Console.WriteLine(
+                $"{"ISBN",-18}{"Naziv",-30}{"Zanr",-20}{"Godina",8}{"Cena",12}");
+            Console.WriteLine(new string('-', 88));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach (Knjiga knjiga in knjige)
+            {
+                Console.WriteLine(
+                    $"{knjiga.ISBN,-18}{knjiga.Naziv,-30}{knjiga.Zanr,-20}{knjiga.GodinaIzdanja,8}{knjiga.Cena,12}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno knjiga: {knjige.Count}");
         }
     }
 }

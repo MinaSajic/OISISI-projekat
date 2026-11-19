@@ -37,10 +37,11 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("3 Dodavanje posetilaca");
                 Console.WriteLine("4 Brisanje posetioca");
                 Console.WriteLine("5 Izmena posetioca");
-                Console.WriteLine("6 Knjige na listi zelja");
-                Console.WriteLine("7 Prikaz kupljenih knjiga");
-                Console.WriteLine("8 Prikaz liste zelja");
-                Console.WriteLine("9 Dodavanje knjiga na listu zelja");
+                Console.WriteLine("6 Prikaz kupljenih knjiga");
+                Console.WriteLine("7 Prikaz liste zelja");
+                Console.WriteLine("8 Dodavanje knjiga na listu zelja");
+                Console.WriteLine("9 Uklanjanje knjiga sa liste zelja");
+                Console.WriteLine("10 Prikaz autora sa liste zelja posetioca");
                 Console.WriteLine("0. Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih: ");
@@ -65,14 +66,20 @@ namespace SajamKnjiga.Controllers
                     case "5":
                         IzmeniPosetioca();
                         break;
-                    case "7":
+                    case "6":
                         PrikazKupljenihKnjiga();
                         break;
-                    case "8":
+                    case "7":
                         prikazListeZelja();
                         break;
-                    case "9":
+                    case "8":
                         DodajKnjigeNaListuZelja();
+                        break;
+                    case "9":
+                        UkloniKnjiguSaListeZelja();
+                        break;
+                    case "10":
+                        PrikazAutoraPosetioca();
                         break;
                     case "0":
                         return;
@@ -81,8 +88,6 @@ namespace SajamKnjiga.Controllers
                         break;
                 }
             }
-
-
         }
 
         private void PrikaziPosetioce()
@@ -446,6 +451,58 @@ namespace SajamKnjiga.Controllers
             }
         }
 
+        private void UkloniKnjiguSaListeZelja()
+        {
+            SkraceniPrikaz();
+
+            Console.WriteLine("Unesite broj clanske karte: ");
+            string brojKarte = Console.ReadLine();
+
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(brojKarte);
+
+            if(posetilac == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen");
+                return;
+            }
+
+            if(posetilac.ListaZelja.Count == 0)
+            {
+                Console.WriteLine("Lista zelja je prazna.");
+                return;
+            }
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("KNJIGE NA LISTI ZELJA");
+            Console.WriteLine();
+
+            Console.WriteLine($"{"ISBN", -18}Naziv");
+            Console.WriteLine(new string('-', 48));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach(Knjiga knjiga in posetilac.ListaZelja)
+            {
+                Console.WriteLine($"{knjiga.ISBN, -18}{knjiga.Naziv}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Unesite ISBN knjige koju zelite ukloniti: ");
+            string isbn = Console.ReadLine();
+
+            if(povezivanje.UkloniKnjiguSaListeZelja(brojKarte, isbn))
+            {
+                Console.WriteLine("Knjiga je uspesno uklonjena sa liste zelja");
+            }
+            else
+            {
+                Console.WriteLine("Uklanjanje nije uspelo. Proverite ISBN.");
+            }
+        }
+
 
         private void prikazListeZelja()
         {
@@ -480,6 +537,65 @@ namespace SajamKnjiga.Controllers
             {
                 Console.WriteLine($" -{knjiga.Naziv}");
             }
+        }
+
+        private void PrikazAutoraPosetioca()
+        {
+            SkraceniPrikaz();
+
+            Console.WriteLine("Unesite broj clanske karte: ");
+            string brojKarte = Console.ReadLine();
+
+            Posetilac posetilac = posetiociServis.DobaviPosetioca(brojKarte);
+
+            if(posetilac == null)
+            {
+                Console.WriteLine("Posetilac nije pronadjen");
+                return;
+            }
+
+            List<Autor> autori = new List<Autor>();
+
+            foreach(Knjiga knjiga in posetilac.ListaZelja)
+            {
+                foreach(Autor autor in knjiga.Autori)
+                {
+                    if(!autori.Exists(a => a.LK == autor.LK))
+                    {
+                        autori.Add(autor);
+                    }
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Posetilac: {posetilac.Ime} {posetilac.Prezime}");
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("AUTORI KNJIGA SA LISTE");
+            Console.WriteLine();
+
+            Console.WriteLine($"{"Ime", -20}{"Prezime", -20}Email");
+            Console.WriteLine(new string('-', 65));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            if (autori.Count == 0)
+            {
+                Console.WriteLine("Nema autora za prikaz.");
+                return;
+            }
+
+            foreach(Autor autor in autori)
+            {
+                Console.WriteLine(
+                    $"{autor.Ime, -20}{autor.Prezime, -20}{autor.E_mail}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno autora: {autori.Count}");
         }
 
     }

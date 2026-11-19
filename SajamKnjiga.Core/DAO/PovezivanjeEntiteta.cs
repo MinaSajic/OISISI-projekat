@@ -13,10 +13,9 @@ namespace SajamKnjiga.Core.DAO
 
         private AutorDAO autori;
         private KnjigaDAO knjige;
-
         private PosetilacDAO posetioci;
-
         private KupovinaDAO kupovine;
+        private IzdavacDAO izdavaci;
 
         public AutorService AutoriServis { get; }
         public KnjigaService KnjigeServis { get; }
@@ -25,13 +24,17 @@ namespace SajamKnjiga.Core.DAO
 
         public PosetilacService PosetiociServis { get; }
 
+        public IzdavacService IzdavaciServis { get; }
+
         public PovezivanjeEntiteta()
         {
             autori = new AutorDAO();
             knjige = new KnjigaDAO();
+            izdavaci = new IzdavacDAO();
 
             AutoriServis = new AutorService(autori);
             KnjigeServis = new KnjigaService(knjige);
+            IzdavaciServis = new IzdavacService(izdavaci);
 
             poveziAutoreIKnjige();
 
@@ -43,6 +46,10 @@ namespace SajamKnjiga.Core.DAO
             poveziPosetioceIKnjige();
 
             PoveziListuZeljaSaKnjigama();
+
+            PoveziIzdavaceIKnjige();
+
+            PoveziIzdavaceIAutore();
         }
 
         private void poveziAutoreIKnjige()
@@ -88,6 +95,7 @@ namespace SajamKnjiga.Core.DAO
             autor.Knjige.Add(knjiga);
 
             knjige.SacuvajKnjige();
+            PoveziIzdavaceIAutore();
 
             return true;
         }
@@ -112,6 +120,7 @@ namespace SajamKnjiga.Core.DAO
             autor.Knjige.Remove(knjiga);
 
             knjige.SacuvajKnjige();
+            PoveziIzdavaceIAutore();
 
             return true;
         }
@@ -188,6 +197,104 @@ namespace SajamKnjiga.Core.DAO
             posetioci.SacuvajPosetioce();
 
             return true;
+        }
+
+        public bool UkloniKnjiguSaListeZelja(string brojKarte, string isbn)
+        {
+            Posetilac posetilac = posetioci.DobaviPosetioca(brojKarte);
+            Knjiga knjiga = knjige.DobaviKnjigu(isbn);
+
+            if(posetilac == null || knjiga == null)
+            {
+                return false;
+            }
+
+            if(!posetilac.IsbnKnjigaNaListiZelja.Contains(isbn))
+            {
+                return false;
+            }
+
+            posetilac.IsbnKnjigaNaListiZelja.Remove(isbn);
+            posetilac.ListaZelja.Remove(knjiga);
+
+            posetioci.SacuvajPosetioce();
+
+            return true;
+        }
+
+        private void PoveziIzdavaceIKnjige()
+        {
+            foreach(Izdavac izdavac in izdavaci.DobaviSveIzdavace())
+            {
+                izdavac.SpisakKnjiga.Clear();
+            }
+
+            foreach(Knjiga knjiga in knjige.DobaviSveKnjige())
+            {
+                knjiga.Izdavac = null;
+
+                if(knjiga.SifraIzdavaca == 0)
+                {
+                    continue;
+                }
+
+                Izdavac izdavac = izdavaci.DobaviIzdavaca(knjiga.SifraIzdavaca);
+
+                if(izdavac != null)
+                {
+                    knjiga.Izdavac = izdavac;
+                    izdavac.SpisakKnjiga.Add(knjiga);
+                }
+            }
+        }
+
+        public bool DodeliIzdavacaKnjizi(string isbn, int sifra)
+        {
+            Knjiga knjiga = knjige.DobaviKnjigu(isbn);
+            Izdavac izdavac = izdavaci.DobaviIzdavaca(sifra);
+
+            if(knjiga == null || izdavac == null)
+            {
+                return false;
+            }
+
+            if(knjiga.SifraIzdavaca == sifra)
+            {
+                return false;
+            }
+
+            if(knjiga.Izdavac != null)
+            {
+                knjiga.Izdavac.SpisakKnjiga.Remove(knjiga);
+            }
+
+            knjiga.SifraIzdavaca = sifra;
+            knjiga.Izdavac = izdavac;
+            izdavac.SpisakKnjiga.Add(knjiga);
+
+            knjige.SacuvajKnjige();
+            PoveziIzdavaceIAutore();
+
+            return true;
+        }
+
+        private void PoveziIzdavaceIAutore()
+        {
+            foreach(Izdavac izdavac in izdavaci.DobaviSveIzdavace())
+            {
+                izdavac.SpisakAutora.Clear();
+
+                foreach(Knjiga knjiga in izdavac.SpisakKnjiga)
+                {
+                    foreach(Autor autor in knjiga.Autori)
+                    {
+                        if(!izdavac.SpisakAutora.Exists(a => a.LK == autor.LK))
+                        {
+                            izdavac.SpisakAutora.Add(autor);
+                        }
+                    }
+                }
+            }
         }
     }
 }

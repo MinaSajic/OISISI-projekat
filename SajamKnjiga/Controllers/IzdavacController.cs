@@ -31,6 +31,8 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("4 Izmena izdavaca");
                 Console.WriteLine("5 Brisanje izdavaca");
                 Console.WriteLine("6 Postavi sefa izdavaca");
+                Console.WriteLine("7 Prikaz knjiga izdavaca");
+                Console.WriteLine("8 Prikaz autora izdavaca");
                 Console.WriteLine("0 Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih:");
@@ -55,6 +57,12 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "6":
                         PostaviSefaIzdavaca();
+                        break;
+                    case "7":
+                        PrikaziKnjigeIzdavaca();
+                        break;
+                    case "8":
+                        PrikaziAutoreIzdavaca();
                         break;
                     case "0":
                         izlazIzPrograma = true;
@@ -110,6 +118,7 @@ namespace SajamKnjiga.Controllers
             if (izdavac == null)
             {
                 Console.WriteLine("Izdavac nije pronadjen!");
+                return;
             }
 
             Console.WriteLine();
@@ -273,5 +282,117 @@ namespace SajamKnjiga.Controllers
             Console.WriteLine("Sef izdavaca je uspesno postavljen!");
         }
 
+        private void PrikaziKnjigeIzdavaca()
+        {
+            PrikaziIzdavace();
+
+            Console.WriteLine("Unesi sifru izdavaca: ");
+
+            if(!int.TryParse(Console.ReadLine(), out int sifra))
+            {
+                Console.WriteLine("Sifra mora biti broj!");
+                return;
+            }
+
+            Izdavac izdavac = izdavacServis.DobaviIzdavaca(sifra);
+
+            if(izdavac == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen!");
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Izdavac: {izdavac.Naziv}");
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("KNJIGE IZDAVACA");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"ISBN", -18}{"Naziv", -30}{"Zanr", -20}{"Godina", 8}{"Cena", 12}");
+
+            Console.WriteLine(new string('-', 88));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            if(izdavac.SpisakKnjiga.Count == 0)
+            {
+                Console.WriteLine("Izdavac nema povezanih knjiga");
+                return;
+            }
+
+            foreach(Knjiga knjiga in izdavac.SpisakKnjiga)
+            {
+                Console.WriteLine(
+                    $"{knjiga.ISBN, -18}{knjiga.Naziv, -30}{knjiga.Zanr, -20}{knjiga.GodinaIzdanja, 8}{knjiga.Cena, 12}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno knjiga: {izdavac.SpisakKnjiga.Count}");
+        }
+
+        private void PrikaziAutoreIzdavaca()
+        {
+            PrikaziIzdavace();
+
+            Console.Write("Unesi sifru izdavaca: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int sifra))
+            {
+                Console.WriteLine("Sifra mora biti broj!");
+                return;
+            }
+
+            Izdavac izdavac = izdavacServis.DobaviIzdavaca(sifra);
+
+            if (izdavac == null)
+            {
+                Console.WriteLine("Izdavac nije pronadjen!");
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Izdavac: {izdavac.Naziv}");
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("AUTORI IZDAVACA");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"Ime",-20}{"Prezime",-20}{"Datum rodjenja",-18}{"Adresa", -35}{"Telefon",-18}Email");
+
+            Console.WriteLine(new string('-', 128));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            if (izdavac.SpisakAutora.Count == 0)
+            {
+                Console.WriteLine("Izdavac nema povezanih autora.");
+                return;
+            }
+
+            foreach (Autor autor in izdavac.SpisakAutora)
+            {
+                string adresa = "Nema adrese";
+                
+                if(autor.Adresa != null)
+                {
+                    adresa = $"{autor.Adresa.Ulica} {autor.Adresa.Broj} {autor.Adresa.Grad} {autor.Adresa.Drzava}";
+                }
+
+                Console.WriteLine(
+                    $"{autor.Ime,-20}{autor.Prezime,-20}{autor.DatumRodjenja,-18:dd.MM.yyyy.}{adresa, -35}{autor.Telefon,-18}{autor.E_mail}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno autora: {izdavac.SpisakAutora.Count}");
+        }
     }
 }

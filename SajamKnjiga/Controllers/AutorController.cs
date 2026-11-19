@@ -38,6 +38,7 @@ namespace SajamKnjiga.Controllers
                 Console.WriteLine("5 Brisanje autora");
                 Console.WriteLine("6 Dodavanje knjige autoru");
                 Console.WriteLine("7 Uklanjanje knjige sa autora");
+                Console.WriteLine("8 Sortiranje autora");
                 Console.WriteLine("0 Nazad");
                 Console.WriteLine();
                 Console.Write("Izaberi od ponudjenih: ");
@@ -66,6 +67,9 @@ namespace SajamKnjiga.Controllers
                         break;
                     case "7":
                         SkloniKnjiguSaAutora();
+                        break;
+                    case "8":
+                        SortiranjeAutora();
                         break;
                     case "0":
                         izlazIzPrograma = true;
@@ -446,6 +450,75 @@ namespace SajamKnjiga.Controllers
             {
                 Console.WriteLine("Uklanjanje nije uspelo. Proveri ISBN i LK!");
             }
+        }
+
+        private void SortiranjeAutora()
+        {
+            List<Autor> autori = autoriServis.DobaviSveAutore();
+
+            Console.WriteLine("Sortiranje autora po:");
+            Console.WriteLine("1 Imenu");
+            Console.WriteLine("2 Prezimenu");
+            Console.WriteLine("3 Email adresi");
+            Console.Write("Izaberi opciju: ");
+
+            string opcija = Console.ReadLine();
+
+            Console.WriteLine("1 Rastuce");
+            Console.WriteLine("2 Opadajuce");
+            Console.Write("Izaberi redosled: ");
+
+            string redosled = Console.ReadLine();
+
+            if (redosled != "1" && redosled != "2")
+            {
+                Console.WriteLine("Pogresan redosled!");
+                return;
+            }
+
+            switch (opcija)
+            {
+                case "1":
+                    autori = autori.OrderBy(a => a.Ime).ToList();
+                    break;
+                case "2":
+                    autori = autori.OrderBy(a => a.Prezime).ToList();
+                    break;
+                case "3":
+                    autori = autori.OrderBy(a => a.E_mail).ToList();
+                    break;
+                default:
+                    Console.WriteLine("Pogresna opcija!");
+                    return;
+            }
+
+            if (redosled == "2")
+            {
+                autori.Reverse();
+            }
+
+            ConsoleColor prethodnaBoja = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Magenta;
+
+            Console.WriteLine();
+            Console.WriteLine("SORTIRANI AUTORI");
+            Console.WriteLine();
+
+            Console.WriteLine(
+                $"{"LK",-18}{"Ime",-20}{"Prezime",-20}Email");
+
+            Console.WriteLine(new string('-', 85));
+
+            Console.ForegroundColor = prethodnaBoja;
+
+            foreach (Autor autor in autori)
+            {
+                Console.WriteLine(
+                    $"{autor.LK,-18}{autor.Ime,-20}{autor.Prezime,-20}{autor.E_mail}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Ukupno autora: {autori.Count}");
         }
     }
 }

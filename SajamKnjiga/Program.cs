@@ -17,7 +17,7 @@ namespace SajamKnjiga
             KupovinaService kupovineServis = povezivanje.KupovineServis;
             AutorService autoriServis = povezivanje.AutoriServis;
             AdresaService adreseServis = new AdresaService();
-            IzdavacService izdavaciServis = new IzdavacService();
+            IzdavacService izdavaciServis = povezivanje.IzdavaciServis;
 
             PosetilacController posetilacController = new PosetilacController(posetioci​Servis, povezivanje);
 
@@ -74,8 +74,6 @@ namespace SajamKnjiga
                         Console.WriteLine("Pogresna opcija");
                         break;
                 }
-
-
             }
         }
     }

@@ -1,4 +1,4 @@
-edg|Hajduk|Horor|1940|2300|300|123446%1003%222
-dhcb|Na Drini cuprija|Roman|1945|1200|350|1003%123446
-evhf|Dervis i smrt|Roman|1966|1500|400|123446
-stt|Andjeo|Biblijski|1999|4500|230|
+edg|Hajduk|Horor|1940|2300|300|123446%1003%222|5
+dhcb|Na Drini cuprija|Roman|1945|1200|350|1003%123446|0
+evhf|Dervis i smrt|Roman|1966|1500|400|123446|0
+stt|Andjeo|Biblijski|1999|4500|230||0

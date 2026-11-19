@@ -17,6 +17,11 @@ namespace SajamKnjiga.Core.Services
             izdavacDAO = new IzdavacDAO();
         }
 
+        internal IzdavacService(IzdavacDAO izdavacDAO)
+        {
+            this.izdavacDAO = izdavacDAO;
+        }
+
         public List<Izdavac> DobaviSveIzdavace()
         {
             return izdavacDAO.DobaviSveIzdavace();
